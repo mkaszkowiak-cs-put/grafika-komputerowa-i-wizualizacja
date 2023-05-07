@@ -38,19 +38,22 @@ Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 // #include "gltext.h"
 // Doesn't work fully - commenting it out
 
-float x = 0;
-float y = 0;
-float z = -5;
-
 bool w_pressed = false;
 bool s_pressed = false;
 bool a_pressed = false;
 bool d_pressed = false;
 
+glm::vec3 cameraPosition = glm::vec3(0, 0, -5);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-glm::vec3 cameraLookAt = glm::vec3(0, 0, 0);
+glm::vec3 cameraDirection = glm::vec3(0, 0, 1); // will be overwritten by yaw & pitch calculations
 
-float aspectRatio=1;
+float yaw = 90.0f; // picture a kid running around a tree
+float pitch = 0.0f;
+float aspectRatio = 1;
+
+int screenWidth = 500, screenHeight = 500;
+
+float lastX = screenWidth/2, lastY = screenHeight/2;
 
 ShaderProgram *sp;
 
@@ -92,6 +95,25 @@ void keyCallback(GLFWwindow* window,int key,int scancode,int action,int mods) {
     }
 }
 
+void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
+	float xoffset = xpos - lastX;
+	float yoffset = lastY - ypos; // reversed since y-coordinates range from bottom to top
+	lastX = xpos;
+	lastY = ypos;
+
+	const float sensitivity = 0.1f;
+	xoffset *= sensitivity;
+	yoffset *= sensitivity;
+
+	yaw += xoffset;
+	pitch += yoffset;
+
+	if (pitch > 89.0f)
+		pitch = 89.0f;
+	if (pitch < -89.0f)
+		pitch = -89.0f;
+}
+
 void windowResizeCallback(GLFWwindow* window,int width,int height) {
     if (height==0) return;
     aspectRatio=(float)width/(float)height;
@@ -110,6 +132,8 @@ void initOpenGLProgram(GLFWwindow* window) {
 	glEnable(GL_DEPTH_TEST);
 	glfwSetWindowSizeCallback(window,windowResizeCallback);
 	glfwSetKeyCallback(window,keyCallback);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetCursorPosCallback(window, mouse_callback);
 
 	sp=new ShaderProgram("v_simplest.glsl",NULL,"f_simplest.glsl");
 }
@@ -130,11 +154,11 @@ void drawScene(GLFWwindow* window,float angle_x,float angle_y) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	sp->use();//Aktywacja programu cieniującego
 
-	glm::vec3 cameraPosition = glm::vec3(x, y, z);
 	glm::mat4 V=glm::lookAt(
          cameraPosition,
-         cameraLookAt,
-         cameraUp); //Wylicz macierz widoku
+         cameraPosition + cameraDirection,
+         cameraUp
+	); //Wylicz macierz widoku
 
     glm::mat4 P=glm::perspective(50.0f*PI/180.0f, aspectRatio, 0.01f, 50.0f); //Wylicz macierz rzutowania
 
@@ -194,23 +218,34 @@ int main(void)
 	glfwSetTime(0); //Zeruj timer
 	while (!glfwWindowShouldClose(window)) //Tak długo jak okno nie powinno zostać zamknięte
 	{
-		float delta_x = 0;
-		float delta_z = 0;
+		float delta_forward = 0;
+		float delta_side = 0;
 		if (w_pressed) {
-			delta_x += glfwGetTime();
+			delta_forward += glfwGetTime();
 		}
 		if (s_pressed) {
-			delta_x -= glfwGetTime();
-		}
-		if (d_pressed) {
-			delta_z += glfwGetTime();
+			delta_forward -= glfwGetTime();
 		}
 		if (a_pressed) {
-			delta_z -= glfwGetTime();
+			delta_side += glfwGetTime();
 		}
+		if (d_pressed) {
+			delta_side -= glfwGetTime();
+		}
+		cameraDirection.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+		cameraDirection.y = sin(glm::radians(pitch));
+		cameraDirection.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+		cameraDirection = glm::normalize(cameraDirection);
 
-		x += delta_x;
-		z += delta_z;
+		glm::vec3 cameraLeft = glm::normalize(glm::cross(cameraUp, cameraDirection));
+
+		glm::vec3 delta_pos = cameraDirection * delta_forward + cameraLeft * delta_side;
+
+		delta_pos.y = 0;
+
+		cameraPosition += delta_pos;
+
+		printf("x:%.2f y:%.2f z:%.2f\n", cameraPosition.x, cameraPosition.y, cameraPosition.z);
 
         glfwSetTime(0); //Zeruj timer
 		drawScene(window,angle_x,angle_y); //Wykonaj procedurę rysującą
