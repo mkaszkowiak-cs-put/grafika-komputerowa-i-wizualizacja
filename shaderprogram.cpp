@@ -96,6 +96,7 @@ ShaderProgram::ShaderProgram(const char* vertexShaderFile,const char* geometrySh
 
 	//Wygeneruj uchwyt programu cieniującego
 	shaderProgram=glCreateProgram();
+	programHandle = shaderProgram;
 
 	//Podłącz do niego shadery i zlinkuj program
 	glAttachShader(shaderProgram,vertexShader);

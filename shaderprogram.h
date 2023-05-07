@@ -41,6 +41,9 @@ public:
 	void use(); //Włącza wykorzystywanie programu cieniującego
 	GLuint u(const char* variableName); //Pobiera numer slotu związanego z daną zmienną jednorodną
 	GLuint a(const char* variableName); //Pobiera numer slotu związanego z danym atrybutem
+
+	// lazy modifications:
+	GLuint programHandle; 
 };
 
 

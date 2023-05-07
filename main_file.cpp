@@ -32,6 +32,7 @@ Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 #include "shaderprogram.h"
 #include "myCube.h"
 #include "myTeapot.h"
+#include "model.h"
 
 // Include a text rendering library for displaying X/Y coords in debug mode
 // #define GLT_IMPLEMENTATION
@@ -57,22 +58,25 @@ float lastX = screenWidth/2, lastY = screenHeight/2;
 
 ShaderProgram *sp;
 
+Model* model;
+
 //Odkomentuj, żeby rysować kostkę
+/*
 float* vertices = myCubeVertices;
 float* normals = myCubeNormals;
 float* texCoords = myCubeTexCoords;
 float* colors = myCubeColors;
 int vertexCount = myCubeVertexCount;
-
+*/
 GLuint tex; //Uchwyt – deklaracja globalna
 
 
 //Odkomentuj, żeby rysować czajnik
-//float* vertices = myTeapotVertices;
-//float* normals = myTeapotNormals;
-//float* texCoords = myTeapotTexCoords;
-//float* colors = myTeapotColors;
-//int vertexCount = myTeapotVertexCount;
+float* vertices = myTeapotVertices;
+float* normals = myTeapotNormals;
+float* texCoords = myTeapotTexCoords;
+float* colors = myTeapotColors;
+int vertexCount = myTeapotVertexCount;
 
 
 
@@ -158,6 +162,7 @@ void initOpenGLProgram(GLFWwindow* window) {
 	tex = readTexture("metal.png");
 
 	sp=new ShaderProgram("v_simplest.glsl",NULL,"f_simplest.glsl");
+	model = new Model("models/Skull.obj");
 }
 
 //Zwolnienie zasobów zajętych przez program
@@ -198,11 +203,17 @@ void drawScene(GLFWwindow* window,float angle_x,float angle_y) {
 
 	glEnableVertexAttribArray(sp->a("texCoord"));
 	glVertexAttribPointer(sp->a("texCoord"), 2, GL_FLOAT, false, 0, texCoords);
+	
+	glEnableVertexAttribArray(sp->a("normal"));  //Włącz przesyłanie danych do atrybutu normal
+	glVertexAttribPointer(sp->a("normal"), 4, GL_FLOAT, false, 0, normals); //Wskaż tablicę z danymi dla atrybutu normal
+
 	glActiveTexture(GL_TEXTURE0); glBindTexture(GL_TEXTURE_2D, tex);
 	glUniform1i(sp->u("tex"), 0);
 
 
     glDrawArrays(GL_TRIANGLES,0,vertexCount); //Narysuj obiekt
+
+	model->Draw(*sp);
 
     glDisableVertexAttribArray(sp->a("vertex"));  //Wyłącz przesyłanie danych do atrybutu vertex
 	glDisableVertexAttribArray(sp->a("texCoord"));
@@ -260,6 +271,9 @@ int main(void)
 		if (d_pressed) {
 			delta_side -= glfwGetTime();
 		}
+
+		delta_forward *= 20;
+		delta_side *= 20;
 		cameraDirection.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
 		cameraDirection.y = sin(glm::radians(pitch));
 		cameraDirection.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
@@ -269,7 +283,8 @@ int main(void)
 
 		glm::vec3 delta_pos = cameraDirection * delta_forward + cameraLeft * delta_side;
 
-		delta_pos.y = 0;
+		// odkomentuj aby nie latac
+		// delta_pos.y = 0;
 
 		cameraPosition += delta_pos;
 
