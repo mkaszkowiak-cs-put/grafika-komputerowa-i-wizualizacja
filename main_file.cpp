@@ -33,6 +33,10 @@ Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 #include "myCube.h"
 #include "myTeapot.h"
 
+// Include a text rendering library for displaying X/Y coords in debug mode
+// #define GLT_IMPLEMENTATION
+// #include "gltext.h"
+// Doesn't work fully - commenting it out
 
 float x = 0;
 float y = 0;
@@ -94,8 +98,13 @@ void windowResizeCallback(GLFWwindow* window,int width,int height) {
     glViewport(0,0,width,height);
 }
 
+void initDebug() {
+	// Stub in case I decide to try and get text rendering working properly
+}
+
 //Procedura inicjująca
 void initOpenGLProgram(GLFWwindow* window) {
+	initDebug();
 	//************Tutaj umieszczaj kod, który należy wykonać raz, na początku programu************
 	glClearColor(0,0,0,1);
 	glEnable(GL_DEPTH_TEST);
@@ -119,6 +128,7 @@ void freeOpenGLProgram(GLFWwindow* window) {
 void drawScene(GLFWwindow* window,float angle_x,float angle_y) {
 	//************Tutaj umieszczaj kod rysujący obraz******************l
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	sp->use();//Aktywacja programu cieniującego
 
 	glm::vec3 cameraPosition = glm::vec3(x, y, z);
 	glm::mat4 V=glm::lookAt(
@@ -131,8 +141,7 @@ void drawScene(GLFWwindow* window,float angle_x,float angle_y) {
     glm::mat4 M=glm::mat4(1.0f);
 	M=glm::rotate(M,angle_y,glm::vec3(1.0f,0.0f,0.0f)); //Wylicz macierz modelu
 	M=glm::rotate(M,angle_x,glm::vec3(0.0f,1.0f,0.0f)); //Wylicz macierz modelu
-
-    sp->use();//Aktywacja programu cieniującego
+  
     //Przeslij parametry programu cieniującego do karty graficznej
     glUniformMatrix4fv(sp->u("P"),1,false,glm::value_ptr(P));
     glUniformMatrix4fv(sp->u("V"),1,false,glm::value_ptr(V));
