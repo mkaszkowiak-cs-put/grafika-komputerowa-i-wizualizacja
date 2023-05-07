@@ -32,7 +32,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="f_simplest.glsl" />
+    <None Include="f_text.glsl" />
     <None Include="v_simplest.glsl" />
+    <None Include="v_text.glsl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

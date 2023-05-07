@@ -33,12 +33,22 @@ Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 #include "myCube.h"
 #include "myTeapot.h"
 
-float speed_x=0;
-float speed_y=0;
+
+float x = 0;
+float y = 0;
+float z = -5;
+
+bool w_pressed = false;
+bool s_pressed = false;
+bool a_pressed = false;
+bool d_pressed = false;
+
+glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+glm::vec3 cameraLookAt = glm::vec3(0, 0, 0);
+
 float aspectRatio=1;
 
 ShaderProgram *sp;
-
 
 //Odkomentuj, żeby rysować kostkę
 float* vertices = myCubeVertices;
@@ -65,16 +75,16 @@ void error_callback(int error, const char* description) {
 
 void keyCallback(GLFWwindow* window,int key,int scancode,int action,int mods) {
     if (action==GLFW_PRESS) {
-        if (key==GLFW_KEY_LEFT) speed_x=-PI/2;
-        if (key==GLFW_KEY_RIGHT) speed_x=PI/2;
-        if (key==GLFW_KEY_UP) speed_y=PI/2;
-        if (key==GLFW_KEY_DOWN) speed_y=-PI/2;
+		if (key == GLFW_KEY_W) w_pressed = true;
+		if (key == GLFW_KEY_S) s_pressed = true;
+		if (key == GLFW_KEY_A) a_pressed = true;
+		if (key == GLFW_KEY_D) d_pressed = true;
     }
     if (action==GLFW_RELEASE) {
-        if (key==GLFW_KEY_LEFT) speed_x=0;
-        if (key==GLFW_KEY_RIGHT) speed_x=0;
-        if (key==GLFW_KEY_UP) speed_y=0;
-        if (key==GLFW_KEY_DOWN) speed_y=0;
+		if (key == GLFW_KEY_W) w_pressed = false;
+		if (key == GLFW_KEY_S) s_pressed = false;
+		if (key == GLFW_KEY_A) a_pressed = false;
+		if (key == GLFW_KEY_D) d_pressed = false;
     }
 }
 
@@ -95,7 +105,6 @@ void initOpenGLProgram(GLFWwindow* window) {
 	sp=new ShaderProgram("v_simplest.glsl",NULL,"f_simplest.glsl");
 }
 
-
 //Zwolnienie zasobów zajętych przez program
 void freeOpenGLProgram(GLFWwindow* window) {
     //************Tutaj umieszczaj kod, który należy wykonać po zakończeniu pętli głównej************
@@ -111,10 +120,11 @@ void drawScene(GLFWwindow* window,float angle_x,float angle_y) {
 	//************Tutaj umieszczaj kod rysujący obraz******************l
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	glm::vec3 cameraPosition = glm::vec3(x, y, z);
 	glm::mat4 V=glm::lookAt(
-         glm::vec3(0, 0, -5),
-         glm::vec3(0,0,0),
-         glm::vec3(0.0f,1.0f,0.0f)); //Wylicz macierz widoku
+         cameraPosition,
+         cameraLookAt,
+         cameraUp); //Wylicz macierz widoku
 
     glm::mat4 P=glm::perspective(50.0f*PI/180.0f, aspectRatio, 0.01f, 50.0f); //Wylicz macierz rzutowania
 
@@ -175,8 +185,24 @@ int main(void)
 	glfwSetTime(0); //Zeruj timer
 	while (!glfwWindowShouldClose(window)) //Tak długo jak okno nie powinno zostać zamknięte
 	{
-        angle_x+=speed_x*glfwGetTime(); //Zwiększ/zmniejsz kąt obrotu na podstawie prędkości i czasu jaki upłynał od poprzedniej klatki
-        angle_y+=speed_y*glfwGetTime(); //Zwiększ/zmniejsz kąt obrotu na podstawie prędkości i czasu jaki upłynał od poprzedniej klatki
+		float delta_x = 0;
+		float delta_z = 0;
+		if (w_pressed) {
+			delta_x += glfwGetTime();
+		}
+		if (s_pressed) {
+			delta_x -= glfwGetTime();
+		}
+		if (d_pressed) {
+			delta_z += glfwGetTime();
+		}
+		if (a_pressed) {
+			delta_z -= glfwGetTime();
+		}
+
+		x += delta_x;
+		z += delta_z;
+
         glfwSetTime(0); //Zeruj timer
 		drawScene(window,angle_x,angle_y); //Wykonaj procedurę rysującą
 		glfwPollEvents(); //Wykonaj procedury callback w zalezności od zdarzeń jakie zaszły.

@@ -24,10 +24,10 @@
     <ClInclude Include="shaderprogram.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-	<ClInclude Include="myCube.h">
+    <ClInclude Include="myCube.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-	<ClInclude Include="myTeapot.h">
+    <ClInclude Include="myTeapot.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
   </ItemGroup>
@@ -46,8 +46,10 @@
     <None Include="f_simplest.glsl">
       <Filter>Pliki zasobów</Filter>
     </None>
-	<None Include="v_simplest.glsl">
+    <None Include="v_simplest.glsl">
       <Filter>Pliki zasobów</Filter>
     </None>
+    <None Include="v_text.glsl" />
+    <None Include="f_text.glsl" />
   </ItemGroup>
 </Project>
