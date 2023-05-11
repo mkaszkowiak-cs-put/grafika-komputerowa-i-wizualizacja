@@ -20,6 +20,9 @@ Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_SWIZZLE
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -33,6 +36,7 @@ Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 #include "myCube.h"
 #include "myTeapot.h"
 #include "model.h"
+#include "skybox.h"
 
 // Include a text rendering library for displaying X/Y coords in debug mode
 // #define GLT_IMPLEMENTATION
@@ -57,6 +61,7 @@ int screenWidth = 500, screenHeight = 500;
 float lastX = screenWidth/2, lastY = screenHeight/2;
 
 ShaderProgram *sp;
+ShaderProgram* skyboxShader;
 
 Model* model;
 
@@ -69,7 +74,7 @@ float* colors = myCubeColors;
 int vertexCount = myCubeVertexCount;
 */
 GLuint tex; //Uchwyt – deklaracja globalna
-
+GLuint texCube;
 
 //Odkomentuj, żeby rysować czajnik
 float* vertices = myTeapotVertices;
@@ -145,6 +150,67 @@ void windowResizeCallback(GLFWwindow* window,int width,int height) {
     glViewport(0,0,width,height);
 }
 
+bool load_cube_map_side(
+	GLuint texture, GLenum side_target, const char* file_name) {
+	glBindTexture(GL_TEXTURE_CUBE_MAP, texture);
+
+	int x, y, n;
+	int force_channels = 4;
+	unsigned char* image_data = stbi_load(
+		file_name, &x, &y, &n, force_channels);
+	if (!image_data) {
+		fprintf(stderr, "ERROR: could not load %s\n", file_name);
+		return false;
+	}
+	// non-power-of-2 dimensions check
+	if ((x & (x - 1)) != 0 || (y & (y - 1)) != 0) {
+		fprintf(stderr,
+			"WARNING: image %s is not power-of-2 dimensions\n",
+			file_name);
+	}
+
+	// copy image data into 'target' side of cube map
+	glTexImage2D(
+		side_target,
+		0,
+		GL_RGBA,
+		x,
+		y,
+		0,
+		GL_RGBA,
+		GL_UNSIGNED_BYTE,
+		image_data);
+	free(image_data);
+	return true;
+}
+
+void create_cube_map(
+	const char* front,
+	const char* back,
+	const char* top,
+	const char* bottom,
+	const char* left,
+	const char* right,
+	GLuint* tex_cube) {
+	// generate a cube-map texture to hold all the sides
+	glActiveTexture(GL_TEXTURE0);
+	glGenTextures(1, tex_cube);
+
+	// load each image and copy into a side of the cube-map texture
+	load_cube_map_side(*tex_cube, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, front);
+	load_cube_map_side(*tex_cube, GL_TEXTURE_CUBE_MAP_POSITIVE_Z, back);
+	load_cube_map_side(*tex_cube, GL_TEXTURE_CUBE_MAP_POSITIVE_Y, top);
+	load_cube_map_side(*tex_cube, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, bottom);
+	load_cube_map_side(*tex_cube, GL_TEXTURE_CUBE_MAP_NEGATIVE_X, left);
+	load_cube_map_side(*tex_cube, GL_TEXTURE_CUBE_MAP_POSITIVE_X, right);
+	// format cube map texture
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+}
+
 void initDebug() {
 	// Stub in case I decide to try and get text rendering working properly
 }
@@ -160,8 +226,18 @@ void initOpenGLProgram(GLFWwindow* window) {
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSetCursorPosCallback(window, mouse_callback);
 	tex = readTexture("metal.png");
+	create_cube_map(
+		"textures/skybox/back.jpg",
+		"textures/skybox/front.jpg",
+		"textures/skybox/top.jpg",
+		"textures/skybox/bottom.jpg",
+		"textures/skybox/left.jpg",
+		"textures/skybox/right.jpg",
+		&texCube
+	);
 
 	sp=new ShaderProgram("v_simplest.glsl",NULL,"f_simplest.glsl");
+	skyboxShader= new ShaderProgram("v_skybox.glsl", NULL, "f_skybox.glsl");
 	model = new Model("models/Skull.obj");
 }
 
@@ -170,16 +246,13 @@ void freeOpenGLProgram(GLFWwindow* window) {
     //************Tutaj umieszczaj kod, który należy wykonać po zakończeniu pętli głównej************
 
     delete sp;
+	delete skyboxShader;
 }
-
-
-
 
 //Procedura rysująca zawartość sceny
 void drawScene(GLFWwindow* window,float angle_x,float angle_y) {
 	//************Tutaj umieszczaj kod rysujący obraz******************l
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	sp->use();//Aktywacja programu cieniującego
 
 	glm::mat4 V=glm::lookAt(
          cameraPosition,
@@ -193,30 +266,57 @@ void drawScene(GLFWwindow* window,float angle_x,float angle_y) {
 	M=glm::rotate(M,angle_y,glm::vec3(1.0f,0.0f,0.0f)); //Wylicz macierz modelu
 	M=glm::rotate(M,angle_x,glm::vec3(0.0f,1.0f,0.0f)); //Wylicz macierz modelu
   
+	GLuint vbo;
+	glGenBuffers(1, &vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBufferData(GL_ARRAY_BUFFER, 3 * 36 * sizeof(float), &skybox_points, GL_STATIC_DRAW);
+
+	GLuint vao;
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
+	glEnableVertexAttribArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+
+	glDepthMask(GL_FALSE);
+	skyboxShader->use();
+
+	glUniformMatrix4fv(skyboxShader->u("P"),1,false,glm::value_ptr(P));
+	glUniformMatrix4fv(skyboxShader->u("V"),1,false,glm::value_ptr(V));
+	glUniformMatrix4fv(skyboxShader->u("M"),1,false,glm::value_ptr(M));
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, texCube);
+	glBindVertexArray(vao);
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+	glDepthMask(GL_TRUE);
+
+	//sp->use();//Aktywacja programu cieniującego
+
     //Przeslij parametry programu cieniującego do karty graficznej
-    glUniformMatrix4fv(sp->u("P"),1,false,glm::value_ptr(P));
-    glUniformMatrix4fv(sp->u("V"),1,false,glm::value_ptr(V));
-    glUniformMatrix4fv(sp->u("M"),1,false,glm::value_ptr(M));
+ //   glUniformMatrix4fv(sp->u("P"),1,false,glm::value_ptr(P));
+ //   glUniformMatrix4fv(sp->u("V"),1,false,glm::value_ptr(V));
+ //   glUniformMatrix4fv(sp->u("M"),1,false,glm::value_ptr(M));
 
-    glEnableVertexAttribArray(sp->a("vertex"));  //Włącz przesyłanie danych do atrybutu vertex
-    glVertexAttribPointer(sp->a("vertex"),4,GL_FLOAT,false,0,vertices); //Wskaż tablicę z danymi dla atrybutu vertex
+ //   glEnableVertexAttribArray(sp->a("vertex"));  //Włącz przesyłanie danych do atrybutu vertex
+ //   glVertexAttribPointer(sp->a("vertex"),4,GL_FLOAT,false,0,vertices); //Wskaż tablicę z danymi dla atrybutu vertex
 
-	glEnableVertexAttribArray(sp->a("texCoord"));
-	glVertexAttribPointer(sp->a("texCoord"), 2, GL_FLOAT, false, 0, texCoords);
-	
-	glEnableVertexAttribArray(sp->a("normal"));  //Włącz przesyłanie danych do atrybutu normal
-	glVertexAttribPointer(sp->a("normal"), 4, GL_FLOAT, false, 0, normals); //Wskaż tablicę z danymi dla atrybutu normal
+	//glEnableVertexAttribArray(sp->a("texCoord"));
+	//glVertexAttribPointer(sp->a("texCoord"), 2, GL_FLOAT, false, 0, texCoords);
+	//
+	//glEnableVertexAttribArray(sp->a("normal"));  //Włącz przesyłanie danych do atrybutu normal
+	//glVertexAttribPointer(sp->a("normal"), 4, GL_FLOAT, false, 0, normals); //Wskaż tablicę z danymi dla atrybutu normal
 
-	glActiveTexture(GL_TEXTURE0); glBindTexture(GL_TEXTURE_2D, tex);
-	glUniform1i(sp->u("tex"), 0);
+	//glActiveTexture(GL_TEXTURE0); glBindTexture(GL_TEXTURE_2D, tex);
+	//glUniform1i(sp->u("tex"), 0);
 
 
-    glDrawArrays(GL_TRIANGLES,0,vertexCount); //Narysuj obiekt
+ //   glDrawArrays(GL_TRIANGLES,0,vertexCount); //Narysuj obiekt
 
-	model->Draw(*sp);
+	//model->Draw(*sp);
 
-    glDisableVertexAttribArray(sp->a("vertex"));  //Wyłącz przesyłanie danych do atrybutu vertex
-	glDisableVertexAttribArray(sp->a("texCoord"));
+ //   glDisableVertexAttribArray(sp->a("vertex"));  //Wyłącz przesyłanie danych do atrybutu vertex
+	//glDisableVertexAttribArray(sp->a("texCoord"));
     glfwSwapBuffers(window); //Przerzuć tylny bufor na przedni
 }
 
@@ -288,7 +388,7 @@ int main(void)
 
 		cameraPosition += delta_pos;
 
-		//printf("x:%.2f y:%.2f z:%.2f\n", cameraPosition.x, cameraPosition.y, cameraPosition.z);
+		/*printf("x:%.2f y:%.2f z:%.2f\n", cameraPosition.x, cameraPosition.y, cameraPosition.z);*/
 
         glfwSetTime(0); //Zeruj timer
 		drawScene(window,angle_x,angle_y); //Wykonaj procedurę rysującą

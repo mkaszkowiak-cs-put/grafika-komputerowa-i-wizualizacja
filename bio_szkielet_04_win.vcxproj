@@ -27,6 +27,8 @@
     <ClInclude Include="shaderprogram.h" />
     <ClInclude Include="myTeapot.h" />
     <ClInclude Include="myCube.h" />
+    <ClInclude Include="skybox.h" />
+    <ClInclude Include="stb_image.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="lodepng.cpp" />
@@ -35,7 +37,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="f_simplest.glsl" />
+    <None Include="f_skybox.glsl" />
     <None Include="v_simplest.glsl" />
+    <None Include="v_skybox.glsl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
