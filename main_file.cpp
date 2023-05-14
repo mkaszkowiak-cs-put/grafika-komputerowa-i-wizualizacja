@@ -254,6 +254,12 @@ void drawScene(GLFWwindow* window,float angle_x,float angle_y) {
 	//************Tutaj umieszczaj kod rysujący obraz******************l
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	glm::mat4 skyboxV = glm::lookAt(
+		glm::vec3(0, 0, 0),
+		cameraDirection,
+		cameraUp
+	);
+
 	glm::mat4 V=glm::lookAt(
          cameraPosition,
          cameraPosition + cameraDirection,
@@ -282,7 +288,7 @@ void drawScene(GLFWwindow* window,float angle_x,float angle_y) {
 	skyboxShader->use();
 
 	glUniformMatrix4fv(skyboxShader->u("P"),1,false,glm::value_ptr(P));
-	glUniformMatrix4fv(skyboxShader->u("V"),1,false,glm::value_ptr(V));
+	glUniformMatrix4fv(skyboxShader->u("V"),1,false,glm::value_ptr(skyboxV));
 	glUniformMatrix4fv(skyboxShader->u("M"),1,false,glm::value_ptr(M));
 
 	glActiveTexture(GL_TEXTURE0);
@@ -291,32 +297,32 @@ void drawScene(GLFWwindow* window,float angle_x,float angle_y) {
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 	glDepthMask(GL_TRUE);
 
-	//sp->use();//Aktywacja programu cieniującego
+	sp->use();//Aktywacja programu cieniującego
 
     //Przeslij parametry programu cieniującego do karty graficznej
- //   glUniformMatrix4fv(sp->u("P"),1,false,glm::value_ptr(P));
- //   glUniformMatrix4fv(sp->u("V"),1,false,glm::value_ptr(V));
- //   glUniformMatrix4fv(sp->u("M"),1,false,glm::value_ptr(M));
+    glUniformMatrix4fv(sp->u("P"),1,false,glm::value_ptr(P));
+    glUniformMatrix4fv(sp->u("V"),1,false,glm::value_ptr(V));
+    glUniformMatrix4fv(sp->u("M"),1,false,glm::value_ptr(M));
 
- //   glEnableVertexAttribArray(sp->a("vertex"));  //Włącz przesyłanie danych do atrybutu vertex
- //   glVertexAttribPointer(sp->a("vertex"),4,GL_FLOAT,false,0,vertices); //Wskaż tablicę z danymi dla atrybutu vertex
+    glEnableVertexAttribArray(sp->a("vertex"));  //Włącz przesyłanie danych do atrybutu vertex
+    glVertexAttribPointer(sp->a("vertex"),4,GL_FLOAT,false,0,vertices); //Wskaż tablicę z danymi dla atrybutu vertex
 
-	//glEnableVertexAttribArray(sp->a("texCoord"));
-	//glVertexAttribPointer(sp->a("texCoord"), 2, GL_FLOAT, false, 0, texCoords);
+	glEnableVertexAttribArray(sp->a("texCoord"));
+	glVertexAttribPointer(sp->a("texCoord"), 2, GL_FLOAT, false, 0, texCoords);
 	//
-	//glEnableVertexAttribArray(sp->a("normal"));  //Włącz przesyłanie danych do atrybutu normal
-	//glVertexAttribPointer(sp->a("normal"), 4, GL_FLOAT, false, 0, normals); //Wskaż tablicę z danymi dla atrybutu normal
+	glEnableVertexAttribArray(sp->a("normal"));  //Włącz przesyłanie danych do atrybutu normal
+	glVertexAttribPointer(sp->a("normal"), 4, GL_FLOAT, false, 0, normals); //Wskaż tablicę z danymi dla atrybutu normal
 
-	//glActiveTexture(GL_TEXTURE0); glBindTexture(GL_TEXTURE_2D, tex);
-	//glUniform1i(sp->u("tex"), 0);
+	glActiveTexture(GL_TEXTURE0); glBindTexture(GL_TEXTURE_2D, tex);
+	glUniform1i(sp->u("tex"), 0);
 
 
- //   glDrawArrays(GL_TRIANGLES,0,vertexCount); //Narysuj obiekt
+    glDrawArrays(GL_TRIANGLES,0,vertexCount); //Narysuj obiekt
 
-	//model->Draw(*sp);
+	model->Draw(*sp);
 
- //   glDisableVertexAttribArray(sp->a("vertex"));  //Wyłącz przesyłanie danych do atrybutu vertex
-	//glDisableVertexAttribArray(sp->a("texCoord"));
+    glDisableVertexAttribArray(sp->a("vertex"));  //Wyłącz przesyłanie danych do atrybutu vertex
+	glDisableVertexAttribArray(sp->a("texCoord"));
     glfwSwapBuffers(window); //Przerzuć tylny bufor na przedni
 }
 
