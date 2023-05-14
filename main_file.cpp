@@ -48,9 +48,11 @@ bool s_pressed = false;
 bool a_pressed = false;
 bool d_pressed = false;
 
-glm::vec3 cameraPosition = glm::vec3(0, 0, -5);
+glm::vec3 cameraPosition = glm::vec3(0, 0, 20);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 glm::vec3 cameraDirection = glm::vec3(0, 0, 1); // will be overwritten by yaw & pitch calculations
+
+glm::vec3 lightPosition = glm::vec3(0, 0, -5);
 
 float yaw = 90.0f; // picture a kid running around a tree
 float pitch = 0.0f;
@@ -292,6 +294,11 @@ void drawScene(GLFWwindow* window,float angle_x,float angle_y) {
 	glActiveTexture(GL_TEXTURE0); 
 	glBindTexture(GL_TEXTURE_2D, tex);
 	glUniform1i(sp->u("tex"), 0);
+
+	
+
+	glUniform3fv(sp->u("lightPos"), 1, glm::value_ptr(lightPosition));
+	glUniform3fv(sp->u("viewPos"), 1, glm::value_ptr(cameraPosition));
 
     glDrawArrays(GL_TRIANGLES,0,vertexCount); //Narysuj obiekt
 

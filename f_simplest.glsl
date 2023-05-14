@@ -1,25 +1,33 @@
 #version 330
 
 
-uniform sampler2D tex;
+in vec3 FragPos;
+in vec3 Normal;
+in vec2 i_tc; // koordynaty tektury
 
 out vec4 pixelColor;
 
-//Zmienne interpolowane
-in vec4 l;
-in vec4 n;
-in vec4 v;
-in vec2 i_tc; // koordynaty tektury
+uniform sampler2D tex;
+uniform vec3 lightPos;
+uniform vec3 viewPos;
+
 
 void main(void) {
-	vec4 ml = normalize(l);
-	vec4 mn = normalize(n);
-	vec4 mv = normalize(v);
+    vec3 color = texture(tex, i_tc).rgb;
+	
+    // ambient
+    vec3 ambient = 0.05 * color;
+    // diffuse
+    vec3 lightDir = normalize(lightPos - FragPos);
+    vec3 normal = normalize(Normal);
+    float diff = max(dot(lightDir, normal), 0.0);
+    vec3 diffuse = diff * color;
+    // specular
+    vec3 viewDir = normalize(viewPos - FragPos);
+    float spec = 0.0;
+    vec3 halfwayDir = normalize(lightDir + viewDir);  
+    spec = pow(max(dot(normal, halfwayDir), 0.0), 32.0);
 
-	vec4 r = reflect(-ml, mn);
-	float nl = clamp(dot(ml, mn), 0, 1);
-	float rv = clamp(dot(r, mv), 0, 1);
-	rv = pow(rv, 50);
-
-	pixelColor = texture(tex,i_tc); // * nl + rv; //  
+    vec3 specular = vec3(0.3) * spec; // assuming bright white light color
+    pixelColor = vec4(ambient + diffuse + specular, 1.0);
 }
