@@ -1,22 +1,3 @@
-/*
-Niniejszy program jest wolnym oprogramowaniem; możesz go
-rozprowadzać dalej i / lub modyfikować na warunkach Powszechnej
-Licencji Publicznej GNU, wydanej przez Fundację Wolnego
-Oprogramowania - według wersji 2 tej Licencji lub(według twojego
-wyboru) którejś z późniejszych wersji.
-
-Niniejszy program rozpowszechniany jest z nadzieją, iż będzie on
-użyteczny - jednak BEZ JAKIEJKOLWIEK GWARANCJI, nawet domyślnej
-gwarancji PRZYDATNOŚCI HANDLOWEJ albo PRZYDATNOŚCI DO OKREŚLONYCH
-ZASTOSOWAŃ.W celu uzyskania bliższych informacji sięgnij do
-Powszechnej Licencji Publicznej GNU.
-
-Z pewnością wraz z niniejszym programem otrzymałeś też egzemplarz
-Powszechnej Licencji Publicznej GNU(GNU General Public License);
-jeśli nie - napisz do Free Software Foundation, Inc., 59 Temple
-Place, Fifth Floor, Boston, MA  02110 - 1301  USA
-*/
-
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_SWIZZLE
 
@@ -33,26 +14,20 @@ Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 #include "constants.h"
 #include "lodepng.h"
 #include "shaderprogram.h"
-#include "myCube.h"
-#include "myTeapot.h"
 #include "model.h"
 #include "skybox.h"
-
-// Include a text rendering library for displaying X/Y coords in debug mode
-// #define GLT_IMPLEMENTATION
-// #include "gltext.h"
-// Doesn't work fully - commenting it out
 
 bool w_pressed = false;
 bool s_pressed = false;
 bool a_pressed = false;
 bool d_pressed = false;
 
-glm::vec3 cameraPosition = glm::vec3(0, 0, 20);
+glm::vec3 cameraPosition = glm::vec3(0, 0, 0);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 glm::vec3 cameraDirection = glm::vec3(0, 0, 1); // will be overwritten by yaw & pitch calculations
 
 glm::vec3 lightPosition = glm::vec3(0, 0, -5);
+glm::vec3 modelPosition = glm::vec3(0, 0, 20);
 
 float yaw = 90.0f; // picture a kid running around a tree
 float pitch = 0.0f;
@@ -67,50 +42,14 @@ ShaderProgram* skyboxShader;
 
 Model* model;
 
-//Odkomentuj, żeby rysować kostkę
-/*
-float* vertices = myCubeVertices;
-float* normals = myCubeNormals;
-float* texCoords = myCubeTexCoords;
-float* colors = myCubeColors;
-int vertexCount = myCubeVertexCount;
-*/
 GLuint tex; //Uchwyt – deklaracja globalna
 GLuint texCube;
-
-//Odkomentuj, żeby rysować czajnik
-float* vertices = myTeapotVertices;
-float* normals = myTeapotNormals;
-float* texCoords = myTeapotTexCoords;
-float* colors = myTeapotColors;
-int vertexCount = myTeapotVertexCount;
-
 
 
 //Procedura obsługi błędów
 void error_callback(int error, const char* description) {
 	fputs(description, stderr);
 }
-
-GLuint readTexture(const char* filename) { //Deklaracja globalna
-	GLuint tex;
-	glActiveTexture(GL_TEXTURE0);
-	//Wczytanie do pamięci komputera
-	std::vector<unsigned char> image; //Alokuj wektor do wczytania obrazka
-	unsigned width, height; //Zmienne do których wczytamy wymiary obrazka
-	//Wczytaj obrazek
-	unsigned error = lodepng::decode(image, width, height, filename);
-	//Import do pamięci karty graficznej
-	glGenTextures(1, &tex); //Zainicjuj jeden uchwyt
-	glBindTexture(GL_TEXTURE_2D, tex); //Uaktywnij uchwyt
-	//Wczytaj obrazek do pamięci KG skojarzonej z uchwytem
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0,
-		GL_RGBA, GL_UNSIGNED_BYTE, (unsigned char*)image.data());
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	return tex;
-}
-
 
 void keyCallback(GLFWwindow* window,int key,int scancode,int action,int mods) {
     if (action==GLFW_PRESS) {
@@ -152,19 +91,21 @@ void windowResizeCallback(GLFWwindow* window,int width,int height) {
     glViewport(0,0,width,height);
 }
 
-bool load_cube_map_side(
-	GLuint texture, GLenum side_target, const char* file_name) {
+bool load_cube_map_side_png(GLuint texture, GLenum side_target, const char* file_name) {
+	// Note: untested! I accidentally converted it to lodepng, leaving it in
 	glBindTexture(GL_TEXTURE_CUBE_MAP, texture);
 
-	int x, y, n;
+	unsigned x, y, n;
 	int force_channels = 4;
-	unsigned char* image_data = stbi_load(
-		file_name, &x, &y, &n, force_channels);
-	if (!image_data) {
-		fprintf(stderr, "ERROR: could not load %s\n", file_name);
+
+	std::vector<unsigned char> image;
+	string filename = string(file_name);
+	unsigned error = lodepng::decode(image, x, y, filename);
+	if (error) {
+		std::cout << "decoder error " << error << ": " << lodepng_error_text(error) << std::endl;
 		return false;
 	}
-	// non-power-of-2 dimensions check
+
 	if ((x & (x - 1)) != 0 || (y & (y - 1)) != 0) {
 		fprintf(stderr,
 			"WARNING: image %s is not power-of-2 dimensions\n",
@@ -172,39 +113,53 @@ bool load_cube_map_side(
 	}
 
 	// copy image data into 'target' side of cube map
-	glTexImage2D(
-		side_target,
-		0,
-		GL_RGBA,
-		x,
-		y,
-		0,
-		GL_RGBA,
-		GL_UNSIGNED_BYTE,
-		image_data);
+	glTexImage2D(side_target, 0, GL_RGBA, x, y, 0, GL_RGBA, GL_UNSIGNED_BYTE, (unsigned char*)image.data());
+	image.clear();
+	return true;
+}
+
+bool load_cube_map_side(GLuint texture, GLenum side_target, const char* file_name) {
+	glBindTexture(GL_TEXTURE_CUBE_MAP, texture);
+
+	int x, y, n;
+	int force_channels = 4;
+	unsigned char* image_data = stbi_load(file_name, &x, &y, &n, force_channels);
+	if (!image_data) {
+		fprintf(stderr, "ERROR: could not load %s\n", file_name);
+		return false;
+	}
+
+	if ((x & (x - 1)) != 0 || (y & (y - 1)) != 0) {
+		fprintf(stderr,
+			"WARNING: image %s is not power-of-2 dimensions\n",
+			file_name);
+	}
+
+	// copy image data into 'target' side of cube map
+	glTexImage2D(side_target, 0, GL_RGBA, x, y, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data);
 	free(image_data);
 	return true;
 }
 
 void create_cube_map(
-	const char* front,
-	const char* back,
-	const char* top,
-	const char* bottom,
-	const char* left,
-	const char* right,
+	const char* negz,
+	const char* posz,
+	const char* posy,
+	const char* negy,
+	const char* negx,
+	const char* posx,
 	GLuint* tex_cube) {
 	// generate a cube-map texture to hold all the sides
 	glActiveTexture(GL_TEXTURE0);
 	glGenTextures(1, tex_cube);
 
 	// load each image and copy into a side of the cube-map texture
-	load_cube_map_side(*tex_cube, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, front);
-	load_cube_map_side(*tex_cube, GL_TEXTURE_CUBE_MAP_POSITIVE_Z, back);
-	load_cube_map_side(*tex_cube, GL_TEXTURE_CUBE_MAP_POSITIVE_Y, top);
-	load_cube_map_side(*tex_cube, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, bottom);
-	load_cube_map_side(*tex_cube, GL_TEXTURE_CUBE_MAP_NEGATIVE_X, left);
-	load_cube_map_side(*tex_cube, GL_TEXTURE_CUBE_MAP_POSITIVE_X, right);
+	load_cube_map_side(*tex_cube, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, negz);
+	load_cube_map_side(*tex_cube, GL_TEXTURE_CUBE_MAP_POSITIVE_Z, posz);
+	load_cube_map_side(*tex_cube, GL_TEXTURE_CUBE_MAP_POSITIVE_Y, posy);
+	load_cube_map_side(*tex_cube, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, negy);
+	load_cube_map_side(*tex_cube, GL_TEXTURE_CUBE_MAP_NEGATIVE_X, negx);
+	load_cube_map_side(*tex_cube, GL_TEXTURE_CUBE_MAP_POSITIVE_X, posx);
 	// format cube map texture
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -213,14 +168,8 @@ void create_cube_map(
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 }
 
-void initDebug() {
-	// Stub in case I decide to try and get text rendering working properly
-}
-
 //Procedura inicjująca
 void initOpenGLProgram(GLFWwindow* window) {
-	initDebug();
-	//************Tutaj umieszczaj kod, który należy wykonać raz, na początku programu************
 	glClearColor(0,0,0,1);
 	glEnable(GL_DEPTH_TEST);
 	glDepthMask(GL_TRUE);
@@ -228,14 +177,13 @@ void initOpenGLProgram(GLFWwindow* window) {
 	glfwSetKeyCallback(window,keyCallback);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSetCursorPosCallback(window, mouse_callback);
-	tex = readTexture("metal.png");
 	create_cube_map(
-		"textures/skybox/back.jpg",
-		"textures/skybox/front.jpg",
-		"textures/skybox/top.jpg",
-		"textures/skybox/bottom.jpg",
-		"textures/skybox/left.jpg",
-		"textures/skybox/right.jpg",
+		"textures/skybox/negz.jpg", // back - negz
+		"textures/skybox/posz.jpg", // front - posz
+		"textures/skybox/posy.jpg", // top - posy
+		"textures/skybox/negy.jpg", // bottom - negy
+		"textures/skybox/negx.jpg", // left - negx
+		"textures/skybox/posx.jpg", // right - posx
 		&texCube
 	);
 
@@ -276,38 +224,16 @@ void drawScene(GLFWwindow* window,float angle_x,float angle_y) {
 	M=glm::rotate(M,angle_x,glm::vec3(0.0f,1.0f,0.0f)); //Wylicz macierz modelu
 	
 	sp->use();//Aktywacja programu cieniującego
-
-    //Przeslij parametry programu cieniującego do karty graficznej
-    glUniformMatrix4fv(sp->u("P"),1,false,glm::value_ptr(P));
-    glUniformMatrix4fv(sp->u("V"),1,false,glm::value_ptr(V));
-    glUniformMatrix4fv(sp->u("M"),1,false,glm::value_ptr(M));
-
-    glEnableVertexAttribArray(sp->a("vertex"));  //Włącz przesyłanie danych do atrybutu vertex
-    glVertexAttribPointer(sp->a("vertex"),4,GL_FLOAT,false,0,vertices); //Wskaż tablicę z danymi dla atrybutu vertex
-
-	glEnableVertexAttribArray(sp->a("texCoord"));
-	glVertexAttribPointer(sp->a("texCoord"), 2, GL_FLOAT, false, 0, texCoords);
-	//
-	glEnableVertexAttribArray(sp->a("normal"));  //Włącz przesyłanie danych do atrybutu normal
-	glVertexAttribPointer(sp->a("normal"), 4, GL_FLOAT, false, 0, normals); //Wskaż tablicę z danymi dla atrybutu normal
-
-	glActiveTexture(GL_TEXTURE0); 
-	glBindTexture(GL_TEXTURE_2D, tex);
-	glUniform1i(sp->u("tex"), 0);
-
 	
+	glUniformMatrix4fv(sp->u("P"), 1, false, glm::value_ptr(P));
+	glUniformMatrix4fv(sp->u("V"), 1, false, glm::value_ptr(V));
+	glUniformMatrix4fv(sp->u("M"), 1, false, glm::value_ptr(M));
 
 	glUniform3fv(sp->u("lightPos"), 1, glm::value_ptr(lightPosition));
 	glUniform3fv(sp->u("viewPos"), 1, glm::value_ptr(cameraPosition));
 
-    glDrawArrays(GL_TRIANGLES,0,vertexCount); //Narysuj obiekt
-
+	model->setPosition(modelPosition);
 	model->Draw(*sp);
-
-    glDisableVertexAttribArray(sp->a("vertex"));  //Wyłącz przesyłanie danych do atrybutu vertex
-	glDisableVertexAttribArray(sp->a("texCoord"));
-	glDisableVertexAttribArray(sp->a("normal"));
-
 	
 	glDepthFunc(GL_LEQUAL);
 	skyboxShader->use();

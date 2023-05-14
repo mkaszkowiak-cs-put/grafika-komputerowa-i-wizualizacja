@@ -59,6 +59,7 @@ public:
 
     void setPosition(glm::vec3 pos) {
         this->position = pos;
+        calculateModelMatrix();
     }
 
     // draws the model, and thus all its meshes
