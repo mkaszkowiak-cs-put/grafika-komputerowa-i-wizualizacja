@@ -271,32 +271,7 @@ void drawScene(GLFWwindow* window,float angle_x,float angle_y) {
     glm::mat4 M=glm::mat4(1.0f);
 	M=glm::rotate(M,angle_y,glm::vec3(1.0f,0.0f,0.0f)); //Wylicz macierz modelu
 	M=glm::rotate(M,angle_x,glm::vec3(0.0f,1.0f,0.0f)); //Wylicz macierz modelu
-  
-	GLuint vbo;
-	glGenBuffers(1, &vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, 3 * 36 * sizeof(float), &skybox_points, GL_STATIC_DRAW);
-
-	GLuint vao;
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
-	glEnableVertexAttribArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-
-	glDepthMask(GL_FALSE);
-	skyboxShader->use();
-
-	glUniformMatrix4fv(skyboxShader->u("P"),1,false,glm::value_ptr(P));
-	glUniformMatrix4fv(skyboxShader->u("V"),1,false,glm::value_ptr(skyboxV));
-	glUniformMatrix4fv(skyboxShader->u("M"),1,false,glm::value_ptr(M));
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, texCube);
-	glBindVertexArray(vao);
-	glDrawArrays(GL_TRIANGLES, 0, 36);
-	glDepthMask(GL_TRUE);
-
+	
 	sp->use();//Aktywacja programu cieniującego
 
     //Przeslij parametry programu cieniującego do karty graficznej
@@ -313,9 +288,9 @@ void drawScene(GLFWwindow* window,float angle_x,float angle_y) {
 	glEnableVertexAttribArray(sp->a("normal"));  //Włącz przesyłanie danych do atrybutu normal
 	glVertexAttribPointer(sp->a("normal"), 4, GL_FLOAT, false, 0, normals); //Wskaż tablicę z danymi dla atrybutu normal
 
-	glActiveTexture(GL_TEXTURE0); glBindTexture(GL_TEXTURE_2D, tex);
+	glActiveTexture(GL_TEXTURE0); 
+	glBindTexture(GL_TEXTURE_2D, tex);
 	glUniform1i(sp->u("tex"), 0);
-
 
     glDrawArrays(GL_TRIANGLES,0,vertexCount); //Narysuj obiekt
 
@@ -323,6 +298,34 @@ void drawScene(GLFWwindow* window,float angle_x,float angle_y) {
 
     glDisableVertexAttribArray(sp->a("vertex"));  //Wyłącz przesyłanie danych do atrybutu vertex
 	glDisableVertexAttribArray(sp->a("texCoord"));
+
+	glDepthFunc(GL_LEQUAL);
+	skyboxShader->use();
+
+	GLuint vbo;
+	glGenBuffers(1, &vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBufferData(GL_ARRAY_BUFFER, 3 * 36 * sizeof(float), &skybox_points, GL_STATIC_DRAW);
+
+	GLuint vao;
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
+	glEnableVertexAttribArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+
+	glUniformMatrix4fv(skyboxShader->u("P"), 1, false, glm::value_ptr(P));
+	glUniformMatrix4fv(skyboxShader->u("V"), 1, false, glm::value_ptr(skyboxV));
+	glUniformMatrix4fv(skyboxShader->u("M"), 1, false, glm::value_ptr(M));
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, texCube);
+	glBindVertexArray(vao);
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+
+	glDepthFunc(GL_LESS);
+	glBindVertexArray(0);
+
     glfwSwapBuffers(window); //Przerzuć tylny bufor na przedni
 }
 

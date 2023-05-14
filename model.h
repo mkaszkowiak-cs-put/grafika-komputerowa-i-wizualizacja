@@ -38,21 +38,44 @@ public:
     vector<Mesh>    meshes;
     string directory;
     bool gammaCorrection;
+    glm::vec3 position;
+    float angle_y;
+    float angle_x;
+
+    glm::mat4 M;
+
 
     // constructor, expects a filepath to a 3D model.
     Model(string const& path, bool gamma = false) : gammaCorrection(gamma)
     {
         loadModel(path);
+
+        position = glm::vec3(0, 0, 0);
+        angle_y = 10;
+        angle_x = 20;
+
+        calculateModelMatrix();
+    }
+
+    void setPosition(glm::vec3 pos) {
+        this->position = pos;
     }
 
     // draws the model, and thus all its meshes
     void Draw(ShaderProgram& shader)
     {
+        glUniformMatrix4fv(shader.u("M"), 1, false, glm::value_ptr(M));
         for (unsigned int i = 0; i < meshes.size(); i++)
             meshes[i].Draw(shader);
     }
 
 private:
+    void calculateModelMatrix() {
+        M = glm::mat4(1.0f); // Macierz jednostkowa - zostawia model niezmieniony TODO: podpiac position
+        M = glm::rotate(M, angle_y, glm::vec3(1.0f, 0.0f, 0.0f)); //Wylicz macierz modelu
+        M = glm::rotate(M, angle_x, glm::vec3(0.0f, 1.0f, 0.0f)); //Wylicz macierz modelu
+    }
+
     // loads a model with supported ASSIMP extensions from file and stores the resulting meshes in the meshes vector.
     void loadModel(string const& path)
     {

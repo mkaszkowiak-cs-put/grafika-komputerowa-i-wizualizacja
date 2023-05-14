@@ -6,5 +6,6 @@ out vec3 texcoords;
 
 void main() {
   texcoords = vp;
-  gl_Position = P * V * vec4(vp, 1.0);
+  vec4 pos = P * V * vec4(vp, 1.0);
+  gl_Position = pos.xyww; /* sets z = 1 */	
 }

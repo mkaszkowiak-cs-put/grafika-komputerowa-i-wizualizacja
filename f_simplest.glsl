@@ -12,9 +12,6 @@ in vec4 v;
 in vec2 i_tc; // koordynaty tektury
 
 void main(void) {
-	//pixelColor = vec4(1,1,1,1);
-	//pixelColor=;
-
 	vec4 ml = normalize(l);
 	vec4 mn = normalize(n);
 	vec4 mv = normalize(v);
