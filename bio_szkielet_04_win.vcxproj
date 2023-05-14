@@ -19,14 +19,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="constants.h" />
-    <ClInclude Include="gltext.h" />
+    <ClInclude Include="input.h" />
     <ClInclude Include="lodepng.h" />
     <ClInclude Include="mesh.h" />
     <ClInclude Include="model.h" />
     <ClInclude Include="shaderprogram.h" />
-    <ClInclude Include="myTeapot.h" />
-    <ClInclude Include="myCube.h" />
     <ClInclude Include="skybox.h" />
     <ClInclude Include="stb_image.h" />
   </ItemGroup>
@@ -36,9 +33,10 @@
     <ClCompile Include="shaderprogram.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="f_simplest.glsl" />
+    <None Include="fragment_shader.glsl" />
     <None Include="f_skybox.glsl" />
-    <None Include="v_simplest.glsl" />
+    <None Include="LICENSE" />
+    <None Include="vertex_shader.glsl" />
     <None Include="v_skybox.glsl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
