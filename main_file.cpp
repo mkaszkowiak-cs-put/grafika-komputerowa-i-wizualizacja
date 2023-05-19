@@ -6,7 +6,6 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <stdlib.h>
@@ -18,6 +17,7 @@
 #include "model.h"
 #include "input.h"
 #include "skybox.h"
+#include "terrain.h"
 
 glm::vec3 lightPosition = glm::vec3(0, 0, -5);
 glm::vec3 modelPosition = glm::vec3(0, 0, 20);
@@ -26,6 +26,7 @@ ShaderProgram* mainShader;
 ShaderProgram* skyboxShader;
 
 Model* model;
+Terrain* terrain;
 
 //Procedura obsługi błędów
 void error_callback(int error, const char* description) {
@@ -46,7 +47,10 @@ void initOpenGLProgram(GLFWwindow* window) {
 	mainShader =new ShaderProgram("vertex_shader.glsl",NULL,"fragment_shader.glsl");
 	skyboxShader= new ShaderProgram("v_skybox.glsl", NULL, "f_skybox.glsl");
 	model = new Model("models/Skull.obj");
-	
+	terrain = new Terrain(10, 1.0);
+	terrain->loadTexture("dirt.png");
+	terrain->generateChunks();
+
 	initSkybox(*skyboxShader);
 }
 
@@ -87,6 +91,7 @@ void drawScene(GLFWwindow* window) {
 	model->setPosition(modelPosition);
 	model->Draw(*mainShader);
 	drawSkybox(*skyboxShader);
+	terrain->draw(*mainShader);
 
     glfwSwapBuffers(window); //Przerzuć tylny bufor na przedni
 }
