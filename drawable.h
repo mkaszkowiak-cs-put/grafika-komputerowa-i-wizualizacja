@@ -3,11 +3,13 @@
 
 #include "shaderprogram.h"
 
+// higher priority = will be drawn after other models
 enum class DrawablePriority : int {
-    VERY_LOW = 1,   // for translucent objects
-    LOW = 2,        // for skybox
-    NORMAL = 3,     // for regular models
-    HIGH = 4        // unused but I wanted to make default name look nicer
+    VERY_LOW = 1,   
+    LOW = 2,        // for regular models 
+    NORMAL = 3,     // for skybox
+    HIGH = 4,       // for translucent objects
+    VERY_HIGH = 5
 };
 
 class Drawable
@@ -15,16 +17,15 @@ class Drawable
 public:
     virtual ~Drawable() {}
     virtual void draw() = 0;
+    virtual DrawablePriority getDrawablePriority() = 0;
 
-    virtual void init(ShaderProgram* shader) {
+    void init(ShaderProgram* shader) {
         this->shader = shader;
         shader->use();
         this->initDrawable();
     }
 
-    DrawablePriority getDrawablePriority() {
-        return DrawablePriority::NORMAL;
-    }
+    
 
 protected:
     ShaderProgram* shader;

@@ -29,8 +29,8 @@ public:
 		glBindVertexArray(0);
 	}
 
-	DrawablePriority getDrawablePriority() {
-		return DrawablePriority::LOW;
+	DrawablePriority getDrawablePriority() override {
+		return DrawablePriority::HIGH;
 	}
 
 protected:

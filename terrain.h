@@ -23,6 +23,10 @@ public:
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     }
 
+    DrawablePriority getDrawablePriority() override {
+        return DrawablePriority::NORMAL;
+    }
+
 protected:
     void initDrawable() {
 
