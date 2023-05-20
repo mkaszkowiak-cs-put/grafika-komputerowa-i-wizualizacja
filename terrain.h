@@ -13,8 +13,7 @@ private:
     int size;
     float tileSize;
     GLuint textureID;
-    std::vector<glm::vec3> vertices;
-    std::vector<GLuint> indices;
+    unsigned int VBO, VAO, EBO;
 
 public:
     Terrain(int size, float tileSize) : size(size), tileSize(tileSize) {}
@@ -23,58 +22,53 @@ public:
         textureID = TextureFromFile("dirt.png", "textures");
     }
 
-    void generateChunks() {
-        vertices.clear();
-        indices.clear();
+    void generateChunks(ShaderProgram& shader) {
+        
+        float vertices[] = {
+            // 4 floats: position, 4 floats: normal vector, 2 floats: tex coords
+             0.0f,   -5.0f,  0.0f,   1.0f,   0.0f, 1.0f, 0.0f, 0.0f,  1.0f, 1.0f,
+             0.0f,   -5.0f, -100.0f, 1.0f,   0.0f, 1.0f, 0.0f, 0.0f,  1.0f, 0.0f,
+            -100.0f, -5.0f, -100.0f, 1.0f,   0.0f, 1.0f, 0.0f, 0.0f,  0.0f, 0.0f,
+            -100.0f, -5.0f,  0.0f,   1.0f,   0.0f, 1.0f, 0.0f, 0.0f,  0.0f, 1.0f
+        };
 
-        int numVerticesPerChunk = size + 1;
+        unsigned int indices[] = {
+            0, 1, 3,
+            1, 2, 3
+        };
+        
+        glGenVertexArrays(1, &VAO);
+        glGenBuffers(1, &VBO);
+        glGenBuffers(1, &EBO);
 
-        for (int cz = -size; cz < size; cz++) {
-            for (int cx = -size; cx < size; cx++) {
-                int chunkX = cx * size;
-                int chunkZ = cz * size;
+        // aktywujemy obecne vertex array - nastepne calle do vertexattribpointer beda sie zapisywaly w tym
+        glBindVertexArray(VAO);
 
-                // Generate vertices for the chunk
-                for (int j = 0; j <= size; j++) {
-                    for (int i = 0; i <= size; i++) {
-                        float x = chunkX + i * tileSize;
-                        float z = chunkZ + j * tileSize;
-                        float y = 0.0f;
-                        vertices.push_back(glm::vec3(x, y, z));
-                    }
-                }
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-                // Generate indices for the chunk
-                for (int j = 0; j < size; j++) {
-                    for (int i = 0; i < size; i++) {
-                        int index = j * numVerticesPerChunk + i;
-                        indices.push_back(index);
-                        indices.push_back(index + numVerticesPerChunk);
-                        indices.push_back(index + numVerticesPerChunk + 1);
-                        indices.push_back(index);
-                        indices.push_back(index + numVerticesPerChunk + 1);
-                        indices.push_back(index + 1);
-                    }
-                }
-            }
-        }
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+        
+        // position
+        glVertexAttribPointer(shader.a("vertex"), 4, GL_FLOAT, GL_FALSE, 10 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(shader.a("vertex"));
+
+        // normal vector
+        glVertexAttribPointer(shader.a("normal"), 4, GL_FLOAT, GL_FALSE, 10 * sizeof(float), (void*)(4 * sizeof(float)));
+        glEnableVertexAttribArray(shader.a("normal"));
+
+        // texture coord
+        glVertexAttribPointer(shader.a("texCoord"), 2, GL_FLOAT, GL_FALSE, 10 * sizeof(float), (void*)(8 * sizeof(float)));
+        glEnableVertexAttribArray(shader.a("texCoord"));
+
     }
 
     void draw(ShaderProgram& shader) {
-
-        shader.use();
-
-        glEnable(GL_TEXTURE_2D);
         glBindTexture(GL_TEXTURE_2D, textureID);
-
-        glEnableClientState(GL_VERTEX_ARRAY);
-        glVertexPointer(3, GL_FLOAT, 0, vertices.data());
-
-        glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, indices.data());
-
-        glDisableClientState(GL_VERTEX_ARRAY);
-
-        glDisable(GL_TEXTURE_2D);
+        glBindVertexArray(VAO);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     }
 };
 

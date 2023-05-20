@@ -20,7 +20,7 @@
 #include "terrain.h"
 
 glm::vec3 lightPosition = glm::vec3(0, 0, -5);
-glm::vec3 modelPosition = glm::vec3(0, 0, 20);
+glm::vec3 modelPosition = glm::vec3(0, 0, 5);
 
 ShaderProgram* mainShader;
 ShaderProgram* skyboxShader;
@@ -47,9 +47,9 @@ void initOpenGLProgram(GLFWwindow* window) {
 	mainShader =new ShaderProgram("vertex_shader.glsl",NULL,"fragment_shader.glsl");
 	skyboxShader= new ShaderProgram("v_skybox.glsl", NULL, "f_skybox.glsl");
 	model = new Model("models/Skull.obj");
-	terrain = new Terrain(10, 1.0);
+	terrain = new Terrain(4, 1.0);
 	terrain->loadTexture("dirt.png");
-	terrain->generateChunks();
+	terrain->generateChunks(*mainShader);
 
 	initSkybox(*skyboxShader);
 }
@@ -90,8 +90,13 @@ void drawScene(GLFWwindow* window) {
 
 	model->setPosition(modelPosition);
 	model->Draw(*mainShader);
-	drawSkybox(*skyboxShader);
+
+	glUniformMatrix4fv(mainShader->u("M"), 1, false, glm::value_ptr(M));
+	glUniformMatrix4fv(mainShader->u("V"), 1, false, glm::value_ptr(V));
+	glUniformMatrix4fv(mainShader->u("P"), 1, false, glm::value_ptr(P));
+
 	terrain->draw(*mainShader);
+	drawSkybox(*skyboxShader);
 
     glfwSwapBuffers(window); //Przerzuć tylny bufor na przedni
 }
