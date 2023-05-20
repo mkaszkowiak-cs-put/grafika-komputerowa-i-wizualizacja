@@ -26,11 +26,13 @@
 #include <iostream>
 #include <map>
 #include <vector>
+
+#include "drawable.h"
 using namespace std;
 
 unsigned int TextureFromFile(const char* path, const string& directory, bool gamma = false);
 
-class Model
+class Model: public Drawable
 {
 public:
     // model data 
@@ -51,8 +53,8 @@ public:
         loadModel(path);
 
         position = glm::vec3(0, 0, 0);
-        angle_y = 10;
-        angle_x = 20;
+        angle_y = 0;
+        angle_x = 0;
 
         calculateModelMatrix();
     }
@@ -63,12 +65,15 @@ public:
     }
 
     // draws the model, and thus all its meshes
-    void Draw(ShaderProgram& shader)
+    void draw()
     {
-        glUniformMatrix4fv(shader.u("M"), 1, false, glm::value_ptr(M));
+        glUniformMatrix4fv(shader->u("M"), 1, false, glm::value_ptr(M));
         for (unsigned int i = 0; i < meshes.size(); i++)
-            meshes[i].Draw(shader);
+            meshes[i].draw(shader);
     }
+
+    void initDrawable() {}
+
 
 private:
     void calculateModelMatrix() {

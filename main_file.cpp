@@ -17,6 +17,7 @@
 #include "model.h"
 #include "input.h"
 #include "skybox.h"
+#include "drawable.h"
 #include "terrain.h"
 
 glm::vec3 lightPosition = glm::vec3(0, 0, -5);
@@ -27,6 +28,7 @@ ShaderProgram* skyboxShader;
 
 Model* model;
 Terrain* terrain;
+Skybox* skybox;
 
 //Procedura obsługi błędów
 void error_callback(int error, const char* description) {
@@ -47,11 +49,13 @@ void initOpenGLProgram(GLFWwindow* window) {
 	mainShader =new ShaderProgram("vertex_shader.glsl",NULL,"fragment_shader.glsl");
 	skyboxShader= new ShaderProgram("v_skybox.glsl", NULL, "f_skybox.glsl");
 	model = new Model("models/Skull.obj");
-	terrain = new Terrain(4, 1.0);
-	terrain->loadTexture("dirt.png");
-	terrain->generateChunks(*mainShader);
+	model->init(mainShader);
 
-	initSkybox(*skyboxShader);
+	terrain = new Terrain();
+	terrain->init(mainShader);
+
+	skybox = new Skybox();
+	skybox->init(skyboxShader);
 }
 
 
@@ -89,14 +93,14 @@ void drawScene(GLFWwindow* window) {
 	glUniform3fv(mainShader->u("viewPos"), 1, glm::value_ptr(cameraPosition));
 
 	model->setPosition(modelPosition);
-	model->Draw(*mainShader);
+	model->draw();
 
 	glUniformMatrix4fv(mainShader->u("M"), 1, false, glm::value_ptr(M));
 	glUniformMatrix4fv(mainShader->u("V"), 1, false, glm::value_ptr(V));
 	glUniformMatrix4fv(mainShader->u("P"), 1, false, glm::value_ptr(P));
 
-	terrain->draw(*mainShader);
-	drawSkybox(*skyboxShader);
+	terrain->draw();
+	skybox->draw();
 
     glfwSwapBuffers(window); //Przerzuć tylny bufor na przedni
 }

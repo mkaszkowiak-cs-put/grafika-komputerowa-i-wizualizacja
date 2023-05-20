@@ -61,7 +61,7 @@ public:
     }
 
     // render the mesh
-    void Draw(ShaderProgram& shader)
+    void draw(ShaderProgram* shader)
     {
         // bind appropriate textures
         unsigned int diffuseNr = 1;
@@ -84,7 +84,7 @@ public:
                 number = std::to_string(heightNr++); // transfer unsigned int to string
 
             // now set the sampler to the correct texture unit
-            glUniform1i(glGetUniformLocation(shader.programHandle, (name + number).c_str()), i);
+            glUniform1i(glGetUniformLocation(shader->programHandle, (name + number).c_str()), i);
             // and finally bind the texture
             glBindTexture(GL_TEXTURE_2D, textures[i].id);
         }
