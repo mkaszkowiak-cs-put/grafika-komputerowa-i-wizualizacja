@@ -23,7 +23,7 @@
 #include "engine.h"
 #include "skull.h"
 
-glm::vec3 lightPosition = glm::vec3(0, 0, -5);
+glm::vec3 lightPosition = glm::vec3(-5, -5, -5);
 
 ShaderProgram* mainShader;
 ShaderProgram* skyboxShader;
@@ -64,6 +64,9 @@ void initOpenGLProgram(GLFWwindow* window) {
 
 	auto terrain = new TerrainObject();
 	engine->add(terrain, mainShader);
+
+	auto wall = new Wall();
+	engine->add(wall, mainShader);
 
 }
 

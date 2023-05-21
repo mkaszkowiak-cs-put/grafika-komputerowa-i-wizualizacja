@@ -83,6 +83,87 @@ protected:
     }
 };
 
+class Cuboid : public Drawable {
+public:
+    Cuboid(glm::vec3 topFrontLeft, glm::vec3 bottomBackRight, const char* texturePath) {
+        auto a = topFrontLeft.x;
+        auto b = topFrontLeft.y;
+        auto c = topFrontLeft.z;
+        auto d = bottomBackRight.x;
+        auto e = bottomBackRight.y;
+        auto f = bottomBackRight.z;
+
+        // pod³oga:
+        walls[0] = new Rectangle(
+            glm::vec3(d, b, f),
+            glm::vec3(a, b, f),
+            glm::vec3(a, b, c),
+            glm::vec3(d, b, c),
+            texturePath
+        );
+
+        // sufit:
+        walls[1] = new Rectangle(
+            glm::vec3(d, e, f),
+            glm::vec3(a, e, f),
+            glm::vec3(a, e, c),
+            glm::vec3(d, e, c),
+            texturePath
+        );
+
+
+        // przod:
+        walls[2] = new Rectangle(
+            glm::vec3(a, e, f),
+            glm::vec3(a, b, f),
+            glm::vec3(a, b, c),
+            glm::vec3(a, e, c),
+            texturePath
+        );
+
+        // tyl:
+        walls[3] = new Rectangle(
+            glm::vec3(d, e, f),
+            glm::vec3(d, b, f),
+            glm::vec3(d, b, c),
+            glm::vec3(d, e, c),
+            texturePath
+        );
+
+        // lewo:
+        walls[4] = new Rectangle(
+            glm::vec3(d, e, c),
+            glm::vec3(d, b, c),
+            glm::vec3(a, b, c),
+            glm::vec3(a, e, c),
+            texturePath
+        );
+
+        // prawo:
+        walls[5] = new Rectangle(
+            glm::vec3(d, e, f),
+            glm::vec3(d, b, f),
+            glm::vec3(a, b, f),
+            glm::vec3(a, e, f),
+            texturePath
+        );
+
+    }
+    void drawDrawable() {
+        for (int i = 0; i < 6; i++) {
+            walls[i]->draw();
+        }
+    }
+
+protected:
+    void initDrawable() {
+        for (int i = 0; i < 6; i++) {
+            walls[i]->init(shader);
+        }
+    }
+
+    Rectangle* walls[6];
+};
 class TerrainObject : public Object {
 public:
     TerrainObject() {
@@ -100,8 +181,31 @@ public:
     }
 
     void stepObject(Engine* engine, double timeDelta) override {
+
     }
 };
 
+class Wall : public Object {
+public:
+    Wall() {
+        drawable = new Cuboid(
+            glm::vec3(5.0f, 5.0f, 5.0f),
+            glm::vec3(30.0f, 30.0f, 30.0f),
+            "dirt.png"
+        );
+
+        boundingBox = new BoundingBox(
+            glm::vec3(5.0f, 5.0f, 5.0f),
+            glm::vec3(30.0f, 30.0f, 30.0f)
+        );
+    }
+
+    void initObject() override {
+
+    }
+
+    void stepObject(Engine* engine, double timeDelta) override {
+    }
+};
 
 #endif // TERRAIN_H_INCLUDED

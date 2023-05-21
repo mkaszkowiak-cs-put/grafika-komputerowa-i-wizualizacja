@@ -24,6 +24,43 @@ public:
 		}
 	}
 
+	// TODO: zrób collides(Object position)
+	// które sprawdza po bounding boxie jeœli istnieje dla teog obiektu
+	// a jeœli nie to po pozycji
+	// musisz uwzglêdniæ czy obiekt z którym koliduje nie jest tym samym obiektem
+	// - daæ jeden warunek continue
+	// bo jeœli obiekt siê przesunie o np 0.1f a ma bounding boxa 1.0f to nowa pozycja bêdzie wewn¹trz jego bounding boxa
+	// wiêc wykryje kolizjê ze samym sob¹ przy obecnym mechanizmie, a tak byc nie powinno
+
+
+	Object* collides(glm::vec3 position) {
+		for (auto obj : objects) {
+			if (!obj->boundingBox) {
+				continue;
+			}
+			
+			if (obj->boundingBox->intersects(position)) {
+				return obj;
+			}
+		}
+
+		return nullptr;
+	}
+	
+	Object* collides(BoundingBox boundingBox) {
+		for (auto obj : objects) {
+			if (!obj->boundingBox) {
+				continue;
+			}
+
+			if (obj->boundingBox->intersects(boundingBox)) {
+				return obj;
+			}
+		}
+
+		return nullptr;
+	}
+
 
 	void draw() {
 		for (auto obj : very_low_priority) {

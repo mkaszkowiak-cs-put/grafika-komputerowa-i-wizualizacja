@@ -18,7 +18,10 @@ public:
 
 	void stepObject(Engine* engine, double timeDelta) override {
 		float delta = timeDelta;
-		this->move(delta * glm::vec3(1, 1, 1));
+		this->move(delta * 5 * glm::vec3(1, 1, 1));
+		if (engine->collides(position)) {
+			printf("Kolizja!!!! %f %f %f\n", position.x, position.y, position.z);
+		}
 	}
 
 

@@ -117,7 +117,7 @@ void updateCameraPosition(double time_elapsed) {
 	glm::vec3 delta_pos = cameraDirection * delta_forward + cameraLeft * delta_side;
 
 	// odkomentuj aby nie latac
-	delta_pos.y = 0;
+	//delta_pos.y = 0;
 
 	cameraPosition += delta_pos;
 }
