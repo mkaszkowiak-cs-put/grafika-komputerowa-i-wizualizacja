@@ -13,13 +13,13 @@ public:
 	}
 
 	void initObject() override {
-
+		this->moveTo(glm::vec3(-30, -30, -30));
 	}
 
 	void stepObject(Engine* engine, double timeDelta) override {
 		float delta = timeDelta;
-		this->move(delta * 5 * glm::vec3(1, 1, 1));
-		if (engine->collides(position)) {
+		this->move(delta * 2 * glm::vec3(1, 1, 1));
+		if (engine->collides(this, position)) {
 			printf("Kolizja!!!! %f %f %f\n", position.x, position.y, position.z);
 		}
 	}

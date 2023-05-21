@@ -12,9 +12,9 @@ public:
 		auto drawable = object->drawable;
 		if (drawable) {
 			this->addDrawable(drawable);
-			drawable->init(shader);
 		}
 
+		object->init(shader);
 		objects.push_back(object);
 	}
 
@@ -24,22 +24,13 @@ public:
 		}
 	}
 
-	// TODO: zrób collides(Object position)
-	// które sprawdza po bounding boxie jeœli istnieje dla teog obiektu
-	// a jeœli nie to po pozycji
-	// musisz uwzglêdniæ czy obiekt z którym koliduje nie jest tym samym obiektem
-	// - daæ jeden warunek continue
-	// bo jeœli obiekt siê przesunie o np 0.1f a ma bounding boxa 1.0f to nowa pozycja bêdzie wewn¹trz jego bounding boxa
-	// wiêc wykryje kolizjê ze samym sob¹ przy obecnym mechanizmie, a tak byc nie powinno
-
-
-	Object* collides(glm::vec3 position) {
+	Object* collides(Object* self, glm::vec3 position) {
 		for (auto obj : objects) {
 			if (!obj->boundingBox) {
 				continue;
 			}
 			
-			if (obj->boundingBox->intersects(position)) {
+			if (obj->boundingBox->intersects(position) && obj != self) {
 				return obj;
 			}
 		}
@@ -47,13 +38,13 @@ public:
 		return nullptr;
 	}
 	
-	Object* collides(BoundingBox boundingBox) {
+	Object* collides(Object* self, BoundingBox boundingBox) {
 		for (auto obj : objects) {
 			if (!obj->boundingBox) {
 				continue;
 			}
 
-			if (obj->boundingBox->intersects(boundingBox)) {
+			if (obj->boundingBox->intersects(boundingBox) && obj != self) {
 				return obj;
 			}
 		}
