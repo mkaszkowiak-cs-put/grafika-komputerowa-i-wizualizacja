@@ -9,13 +9,31 @@
 #include "drawable.h"
 #include "object.h"
 
-class Terrain: public Drawable {
+class Rectangle: public Drawable {
 private:
     GLuint textureID;
     unsigned int VBO, VAO, EBO;
+    unsigned int indices[6] = {
+        0, 1, 3,
+        1, 2, 3
+    };
+
+    glm::vec3 topRight;
+    glm::vec3 topLeft;
+    glm::vec3 bottomRight;
+    glm::vec3 bottomLeft;
+
+    const char* texturePath;
 
 public:
-    Terrain() {}
+    Rectangle(glm::vec3 topRight, glm::vec3 bottomRight, glm::vec3 bottomLeft, glm::vec3 topLeft, const char* texturePath) {
+        this->topRight = topRight;
+        this->topLeft = topLeft;
+        this->bottomRight = bottomRight;
+        this->bottomLeft = bottomLeft;
+        
+        this->texturePath = texturePath;
+    }
 
 
     void drawDrawable() {
@@ -26,20 +44,14 @@ public:
 
 protected:
     void initDrawable() {
+        textureID = TextureFromFile(this->texturePath, "textures");
 
-        textureID = TextureFromFile("dirt.png", "textures");
-
-        float vertices[] = {
+        float vertices[]  = {
             // 4 floats: position, 4 floats: normal vector, 2 floats: tex coords
-             0.0f,   -5.0f,  0.0f,   1.0f,   0.0f, 1.0f, 0.0f, 0.0f,  1.0f, 1.0f,
-             0.0f,   -5.0f, -100.0f, 1.0f,   0.0f, 1.0f, 0.0f, 0.0f,  1.0f, 0.0f,
-            -100.0f, -5.0f, -100.0f, 1.0f,   0.0f, 1.0f, 0.0f, 0.0f,  0.0f, 0.0f,
-            -100.0f, -5.0f,  0.0f,   1.0f,   0.0f, 1.0f, 0.0f, 0.0f,  0.0f, 1.0f
-        };
-
-        unsigned int indices[] = {
-            0, 1, 3,
-            1, 2, 3
+            topRight.x, topRight.y, topRight.z,  1.0f,   0.0f, 1.0f, 0.0f, 0.0f,  1.0f, 1.0f,
+            bottomRight.x, bottomRight.y, bottomRight.z, 1.0f,   0.0f, 1.0f, 0.0f, 0.0f,  1.0f, 0.0f,
+            bottomLeft.x, bottomLeft.y, bottomLeft.z, 1.0f,   0.0f, 1.0f, 0.0f, 0.0f,  0.0f, 0.0f,
+            topLeft.x, topLeft.y, topLeft.z, 1.0f,  0.0f, 1.0f, 0.0f, 0.0f,  0.0f, 1.0f
         };
 
         glGenVertexArrays(1, &VAO);
@@ -74,7 +86,13 @@ protected:
 class TerrainObject : public Object {
 public:
     TerrainObject() {
-        drawable = new Terrain();
+        drawable = new Rectangle(
+            glm::vec3(0.0f, -5.0f, 0.0f),
+            glm::vec3(0.0f, -5.0f, -100.0f),
+            glm::vec3(-100.0f, -5.0f, -100.0f),
+            glm::vec3(-100.0f, -5.0f, 0.0f),
+            "dirt.png"
+        );
     }
 
     void initObject() override {
