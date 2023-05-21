@@ -62,12 +62,12 @@ void initOpenGLProgram(GLFWwindow* window) {
 	auto terrain = new Terrain();
 	printf("init %d\n", terrain->getDrawablePriority());
 	terrain->init(mainShader);
-	engine->add(model);
+	engine->add(terrain);
 
 	auto skybox = new Skybox();
 	printf("init %d\n", skybox->getDrawablePriority());
 	skybox->init(skyboxShader);
-	engine->add(model);
+	engine->add(skybox);
 }
 
 

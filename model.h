@@ -74,10 +74,6 @@ public:
 
     void initDrawable() {}
 
-    DrawablePriority getDrawablePriority() override {
-        return DrawablePriority::NORMAL;
-    }
-
 
 private:
     void calculateModelMatrix() {

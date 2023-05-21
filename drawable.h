@@ -17,7 +17,9 @@ class Drawable
 public:
     virtual ~Drawable() {}
     virtual void draw() = 0;
-    virtual DrawablePriority getDrawablePriority() = 0;
+    virtual DrawablePriority getDrawablePriority() {
+        return DrawablePriority::NORMAL;
+    }
 
     void init(ShaderProgram* shader) {
         this->shader = shader;
