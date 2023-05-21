@@ -7,6 +7,7 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include "drawable.h"
+#include "object.h"
 
 class Terrain: public Drawable {
 private:
@@ -17,7 +18,7 @@ public:
     Terrain() {}
 
 
-    void draw() {
+    void drawDrawable() {
         glBindTexture(GL_TEXTURE_2D, textureID);
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
@@ -69,5 +70,20 @@ protected:
 
     }
 };
+
+class TerrainObject : public Object {
+public:
+    TerrainObject() {
+        drawable = new Terrain();
+    }
+
+    void initObject() override {
+
+    }
+
+    void stepObject(Engine* engine, double timeDelta) override {
+    }
+};
+
 
 #endif // TERRAIN_H_INCLUDED

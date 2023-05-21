@@ -1,10 +1,11 @@
 #ifndef SKYBOX_H_INCLUDED
 #define SKYBOX_H_INCLUDED
+#include "object.h"
 
 class Skybox : public Drawable {
 public:
 
-	void draw() {
+	void drawDrawable() {
 		glDepthFunc(GL_LEQUAL);
 		shader->use();
 
@@ -181,7 +182,19 @@ protected:
 };
 
 
+class SkyboxObject : public Object {
+public:
+	SkyboxObject() {
+		drawable = new Skybox();
+	}
 
+	void initObject() override {
+
+	}
+
+	void stepObject(Engine* engine, double timeDelta) override {
+	}
+};
 
 
 

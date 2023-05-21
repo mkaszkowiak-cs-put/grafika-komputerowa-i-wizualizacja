@@ -19,13 +19,18 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="bounding_box.h" />
     <ClInclude Include="drawable.h" />
+    <ClInclude Include="engine.fwd.h" />
     <ClInclude Include="engine.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="lodepng.h" />
     <ClInclude Include="mesh.h" />
     <ClInclude Include="model.h" />
+    <ClInclude Include="object.h" />
     <ClInclude Include="shaderprogram.h" />
+    <ClInclude Include="object.fwd.h" />
+    <ClInclude Include="skull.h" />
     <ClInclude Include="skybox.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="terrain.h" />

@@ -19,7 +19,9 @@
 #include "skybox.h"
 #include "drawable.h"
 #include "terrain.h"
+#include "bounding_box.h"
 #include "engine.h"
+#include "skull.h"
 
 glm::vec3 lightPosition = glm::vec3(0, 0, -5);
 
@@ -54,20 +56,15 @@ void initOpenGLProgram(GLFWwindow* window) {
 
 	engine = new Engine();
 
-	auto model = new Model("models/Skull.obj");
-	model->init(mainShader);
-	printf("init %d\n", model->getDrawablePriority());
-	engine->add(model);
+	auto skull = new Skull();
+	engine->add(skull, mainShader);
 
-	auto terrain = new Terrain();
-	printf("init %d\n", terrain->getDrawablePriority());
-	terrain->init(mainShader);
-	engine->add(terrain);
+	auto skybox = new SkyboxObject();
+	engine->add(skybox, skyboxShader);
 
-	auto skybox = new Skybox();
-	printf("init %d\n", skybox->getDrawablePriority());
-	skybox->init(skyboxShader);
-	engine->add(skybox);
+	auto terrain = new TerrainObject();
+	engine->add(terrain, mainShader);
+
 }
 
 
@@ -146,6 +143,7 @@ int main(void)
 	{
 		double time_elapsed = glfwGetTime();
 		updateCameraPosition(time_elapsed);
+		engine->step(time_elapsed);
 
 		/*printf("x:%.2f y:%.2f z:%.2f\n", cameraPosition.x, cameraPosition.y, cameraPosition.z);*/
 
