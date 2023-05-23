@@ -228,20 +228,18 @@ unsigned int TextureFromFile(const char* path, const string& directory, bool gam
     unsigned int textureID;
     glGenTextures(1, &textureID);
 
+    int width, height, nrChannels;
+    stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
+    
+    unsigned char* data = stbi_load(filename.c_str(), &width, &height, &nrChannels, STBI_rgb);
 
-    //unsigned char* data = stbi_load(filename.c_str(), &width, &height, &nrComponents, 0);
-    std::vector<unsigned char> image; //Alokuj wektor do wczytania obrazka
-    unsigned width, height; //Zmienne do których wczytamy wymiary obrazka
     //Wczytaj obrazek
-    unsigned error = lodepng::decode(image, width, height, filename);
-    if (error) std::cout << "decoder error " << error << ": " << lodepng_error_text(error) << std::endl;
-
-    if (!error)
+    if (data)
     {
         GLenum format = GL_RGBA; // assuming this is RGBA due to lodepng
 
         glBindTexture(GL_TEXTURE_2D, textureID);
-        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, (unsigned char*)image.data());
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);

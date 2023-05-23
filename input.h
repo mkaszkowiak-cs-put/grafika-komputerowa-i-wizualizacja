@@ -88,10 +88,10 @@ void windowResizeCallback(GLFWwindow* window, int width, int height) {
 float getMovementDeltaForward(double time_elapsed) {
 	float delta_forward = 0;
 	if (w_pressed) {
-		delta_forward += 20 * time_elapsed;
+		delta_forward += 60 * time_elapsed;
 	}
 	if (s_pressed) {
-		delta_forward -= 20 * time_elapsed;
+		delta_forward -= 60 * time_elapsed;
 	}
 	return delta_forward;
 }
@@ -99,10 +99,10 @@ float getMovementDeltaForward(double time_elapsed) {
 float getMovementDeltaSide(double time_elapsed) {
 	float delta_side = 0;
 	if (a_pressed) {
-		delta_side += 20 * time_elapsed;
+		delta_side += 60 * time_elapsed;
 	}
 	if (d_pressed) {
-		delta_side -= 20 * time_elapsed;
+		delta_side -= 60 * time_elapsed;
 	}
 	return delta_side;
 }
@@ -120,7 +120,7 @@ void updateCameraPosition(double time_elapsed) {
 	glm::vec3 delta_pos = cameraDirection * delta_forward + cameraLeft * delta_side;
 
 	// odkomentuj aby nie latac
-	//delta_pos.y = 0;
+	delta_pos.y = 0;
 
 	cameraPosition += delta_pos;
 }

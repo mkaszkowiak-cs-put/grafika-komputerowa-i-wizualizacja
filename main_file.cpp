@@ -101,6 +101,17 @@ void initOpenGLProgram(GLFWwindow* window) {
 		);
 		engine->add(wall, mainShader);
 	}
+
+	for (const auto& painting : paintings) {
+		auto wall = new Wall(
+			painting.start,
+			painting.end,
+			CuboidWalls(
+				painting.texture
+			)
+		);
+		engine->add(wall, mainShader);
+	}
 }
 
 
