@@ -83,9 +83,25 @@ protected:
     }
 };
 
+struct CuboidWalls {
+    CuboidWalls(const char* left, const char* right, const char* front, const char* back, const char* floor, const char* ceiling) : left(left), right(right), front(front), back(back), floor(floor), ceiling(ceiling) {
+        //
+    };
+    CuboidWalls(const char* all) : left(all), right(all), front(all), back(all), floor(all), ceiling(all) {
+        //
+    }
+
+    const char* left;
+    const char* right;
+    const char* front;
+    const char* back;
+    const char* floor;
+    const char* ceiling;
+};
+
 class Cuboid : public Drawable {
 public:
-    Cuboid(glm::vec3 topFrontLeft, glm::vec3 bottomBackRight, const char* texturePath) {
+    Cuboid(const glm::vec3 topFrontLeft, const glm::vec3 bottomBackRight, const CuboidWalls& textures) {
         auto a = topFrontLeft.x;
         auto b = topFrontLeft.y;
         auto c = topFrontLeft.z;
@@ -99,7 +115,7 @@ public:
             glm::vec3(a, b, f),
             glm::vec3(a, b, c),
             glm::vec3(d, b, c),
-            texturePath
+            textures.floor
         );
 
         // sufit:
@@ -108,7 +124,7 @@ public:
             glm::vec3(a, e, f),
             glm::vec3(a, e, c),
             glm::vec3(d, e, c),
-            texturePath
+            textures.ceiling
         );
 
 
@@ -118,7 +134,7 @@ public:
             glm::vec3(a, b, f),
             glm::vec3(a, b, c),
             glm::vec3(a, e, c),
-            texturePath
+            textures.front
         );
 
         // tyl:
@@ -127,7 +143,7 @@ public:
             glm::vec3(d, b, f),
             glm::vec3(d, b, c),
             glm::vec3(d, e, c),
-            texturePath
+            textures.back
         );
 
         // lewo:
@@ -136,7 +152,7 @@ public:
             glm::vec3(d, b, c),
             glm::vec3(a, b, c),
             glm::vec3(a, e, c),
-            texturePath
+            textures.left
         );
 
         // prawo:
@@ -145,7 +161,7 @@ public:
             glm::vec3(d, b, f),
             glm::vec3(a, b, f),
             glm::vec3(a, e, f),
-            texturePath
+            textures.right
         );
 
     }
@@ -187,16 +203,15 @@ public:
 
 class Wall : public Object {
 public:
-    Wall() {
+    Wall(const glm::vec3 topFrontLeft, const glm::vec3 bottomBackRight, const CuboidWalls& textures) {
         drawable = new Cuboid(
-            glm::vec3(5.0f, 5.0f, 5.0f),
-            glm::vec3(30.0f, 30.0f, 30.0f),
-            "dirt.png"
+            topFrontLeft,
+            bottomBackRight,
+            textures
         );
-
         boundingBox = new BoundingBox(
-            glm::vec3(5.0f, 5.0f, 5.0f),
-            glm::vec3(30.0f, 30.0f, 30.0f)
+            topFrontLeft,
+            bottomBackRight
         );
     }
 
