@@ -37,6 +37,9 @@ int screenWidth = 500, screenHeight = 500;
 
 float lastX = screenWidth / 2, lastY = screenHeight / 2;
 
+// birds eye view
+// extern glm::vec3 cameraPosition = glm::vec3(150.0f, 300.0f, 150.0f);
+
 extern glm::vec3 cameraPosition = glm::vec3(0, 1, 0);
 extern glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 extern glm::vec3 cameraDirection = glm::vec3(0, 0, 1); // will be overwritten by yaw & pitch calculations

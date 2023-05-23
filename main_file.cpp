@@ -22,6 +22,7 @@
 #include "bounding_box.h"
 #include "engine.h"
 #include "skull.h"
+#include "room.h"
 
 glm::vec3 lightPosition = glm::vec3(-5, -5, -5);
 
@@ -51,13 +52,13 @@ void initOpenGLProgram(GLFWwindow* window) {
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSetCursorPosCallback(window, mouse_callback);
 
-	mainShader =new ShaderProgram("vertex_shader.glsl",NULL,"fragment_shader.glsl");
+	mainShader = new ShaderProgram("vertex_shader.glsl",NULL,"fragment_shader.glsl");
 	skyboxShader= new ShaderProgram("v_skybox.glsl", NULL, "f_skybox.glsl");
 
 	engine = new Engine();
 
-	auto skull = new Skull();
-	engine->add(skull, mainShader);
+	//auto skull = new Skull();
+	//engine->add(skull, mainShader);
 
 	auto skybox = new SkyboxObject();
 	engine->add(skybox, skyboxShader);
@@ -65,9 +66,41 @@ void initOpenGLProgram(GLFWwindow* window) {
 	auto terrain = new TerrainObject();
 	engine->add(terrain, mainShader);
 
-	auto wall = new Wall();
-	engine->add(wall, mainShader);
+	auto room = new Wall(
+		roomCoords.start,
+		roomCoords.end,
+		CuboidWalls(
+			"bricks.png",
+			"bricks.png",
+			"bricks.png",
+			"bricks.png",
+			"tiles.png",
+			"ceiling.png"
+		)
+	);
+	engine->add(room, mainShader);
 
+	for (const auto& wallCoords : horizontalWallsCoords) {
+		auto wall = new Wall(
+			wallCoords.start,
+			wallCoords.end,
+			CuboidWalls(
+				"bricks.png"
+			)
+		);
+		engine->add(wall, mainShader);
+	}
+
+	for (const auto& wallCoords : verticalWallsCoords) {
+		auto wall = new Wall(
+			wallCoords.start,
+			wallCoords.end,
+			CuboidWalls(
+				"bricks.png"
+			)
+		);
+		engine->add(wall, mainShader);
+	}
 }
 
 
