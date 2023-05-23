@@ -184,10 +184,10 @@ class TerrainObject : public Object {
 public:
     TerrainObject() {
         drawable = new Rectangle(
-            glm::vec3(0.0f, -5.0f, 0.0f),
-            glm::vec3(0.0f, -5.0f, -100.0f),
-            glm::vec3(-100.0f, -5.0f, -100.0f),
-            glm::vec3(-100.0f, -5.0f, 0.0f),
+            glm::vec3(-300.0f, -43.0f, 600.0f),
+            glm::vec3(-300.0f, -43.0f, -300.0f),
+            glm::vec3(600.0f, -43.0f, -300.0f),
+            glm::vec3(600.0f, -43.0f, 600.0f),
             "dirt.png"
         );
     }
