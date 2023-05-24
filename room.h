@@ -10,13 +10,11 @@ struct WallCoordinates {
 	glm::vec3 end;
 };
 
-struct Painting {
-	Painting(glm::vec3 start, glm::vec3 end, const char* texture) : start(start), end(end), texture(texture) {
+struct Painting : WallCoordinates {
+	Painting(glm::vec3 start, glm::vec3 end, const char* texture) : WallCoordinates(start, end), texture(texture) {
 		//
 	}
 
-	glm::vec3 start;
-	glm::vec3 end;
 	const char* texture;
 };
 
