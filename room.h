@@ -43,9 +43,23 @@ struct Painting : WallCoordinates {
 	PaintingSpotLight spotLight;
 };
 
-WallCoordinates roomCoords{
-	glm::vec3(-150.0f, -40.0f, -150.0f),
-	glm::vec3(450.0f, 60.0f, 450.0f),
+std::vector<WallCoordinates> roomWallsCoords{
+	WallCoordinates(
+		glm::vec3(-155.5f, -40.0f, -150.0f),
+		glm::vec3(-150.0f, 60.0f, 450.0f)
+	),
+	WallCoordinates(
+		glm::vec3(455.5f, -40.0f, -150.0f),
+		glm::vec3(450.0f, 60.0f, 450.0f)
+	),
+	WallCoordinates(
+		glm::vec3(-150.5f, -40.0f, 455.0f),
+		glm::vec3(450.0f, 60.0f, 450.0f)
+	),
+	WallCoordinates(
+		glm::vec3(-150.5f, -40.0f, -150.0f),
+		glm::vec3(450.0f, 60.0f, -155.0f)
+	),
 };
 
 std::vector<WallCoordinates> horizontalWallsCoords{

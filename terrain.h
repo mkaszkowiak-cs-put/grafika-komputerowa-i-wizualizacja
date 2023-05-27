@@ -182,13 +182,11 @@ protected:
 };
 class TerrainObject : public Object {
 public:
-    TerrainObject() {
-        drawable = new Rectangle(
-            glm::vec3(-300.0f, -43.0f, 600.0f),
-            glm::vec3(-300.0f, -43.0f, -300.0f),
-            glm::vec3(600.0f, -43.0f, -300.0f),
-            glm::vec3(600.0f, -43.0f, 600.0f),
-            "dirt.png"
+    TerrainObject(const glm::vec3 topFrontLeft, const glm::vec3 bottomBackRight, const CuboidWalls& texture) {
+        drawable = new Cuboid(
+            topFrontLeft,
+            bottomBackRight,
+            texture
         );
     }
 

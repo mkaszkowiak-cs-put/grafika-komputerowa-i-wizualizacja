@@ -16,12 +16,17 @@
 // ! kolejnosc importow ma znaczenie, bo dzialamy obecnie na dzikich zmiennych globalnych (extern) xD
 #include "shaderprogram.h"
 #include "model.h"
-#include "input.h"
-#include "skybox.h"
+
 #include "drawable.h"
 #include "terrain.h"
 #include "bounding_box.h"
 #include "engine.h"
+
+Engine* engine;
+
+#include "input.h"
+#include "skybox.h"
+
 #include "skull.h"
 #include "room.h"
 
@@ -35,7 +40,6 @@ Model* model;
 Terrain* terrain;
 Skybox* skybox;
 */
-Engine* engine;
 
 //Procedura obsługi błędów
 void error_callback(int error, const char* description) {
@@ -64,30 +68,34 @@ void initOpenGLProgram(GLFWwindow* window) {
 	auto skybox = new SkyboxObject();
 	engine->add(skybox, skyboxShader);
 
-	auto terrain = new TerrainObject();
+	auto terrain = new TerrainObject(
+		glm::vec3(-300.0f, -41.0f, -300.0f),
+		glm::vec3(600.0f, -41.0f, 600.0f),
+		"dirt.png"
+	);
 	engine->add(terrain, mainShader);
 
-	auto room = new Wall(
-		roomCoords.start,
-		roomCoords.end,
-		CuboidWalls(
-			"bricks.png",
-			"bricks.png",
-			"bricks.png",
-			"bricks.png",
-			"tiles.png",
-			"ceiling.png"
-		)
+	auto floor = new TerrainObject(
+		glm::vec3(-150.0f, -40.0f, -150.0f),
+		glm::vec3(450.0f, -40.0f, 450.0f),
+		"tiles.png"
 	);
-	engine->add(room, mainShader);
+	engine->add(floor, mainShader);
+
+	for (const auto& wallCoords : roomWallsCoords) {
+		auto wall = new Wall(
+			wallCoords.start,
+			wallCoords.end,
+			"bricks.png"
+		);
+		engine->add(wall, mainShader);
+	}
 
 	for (const auto& wallCoords : horizontalWallsCoords) {
 		auto wall = new Wall(
 			wallCoords.start,
 			wallCoords.end,
-			CuboidWalls(
-				"bricks.png"
-			)
+			"bricks.png"
 		);
 		engine->add(wall, mainShader);
 	}
@@ -96,9 +104,7 @@ void initOpenGLProgram(GLFWwindow* window) {
 		auto wall = new Wall(
 			wallCoords.start,
 			wallCoords.end,
-			CuboidWalls(
-				"bricks.png"
-			)
+			"bricks.png"
 		);
 		engine->add(wall, mainShader);
 	}
@@ -107,9 +113,7 @@ void initOpenGLProgram(GLFWwindow* window) {
 		auto wall = new Wall(
 			painting.start,
 			painting.end,
-			CuboidWalls(
-				painting.texture
-			)
+			painting.texture
 		);
 		engine->add(wall, mainShader);
 	}

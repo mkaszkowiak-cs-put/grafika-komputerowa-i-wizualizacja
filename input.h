@@ -122,6 +122,10 @@ void updateCameraPosition(double time_elapsed) {
 	// odkomentuj aby nie latac
 	delta_pos.y = 0;
 
+	if (engine->collides(nullptr, cameraPosition + delta_pos)) {
+		return;
+	}
+
 	cameraPosition += delta_pos;
 }
 
