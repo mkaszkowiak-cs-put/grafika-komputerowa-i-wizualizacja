@@ -27,6 +27,7 @@
     <ClInclude Include="lodepng.h" />
     <ClInclude Include="mesh.h" />
     <ClInclude Include="model.h" />
+    <ClInclude Include="npc.h" />
     <ClInclude Include="object.h" />
     <ClInclude Include="room.h" />
     <ClInclude Include="shaderprogram.h" />

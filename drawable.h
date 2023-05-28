@@ -42,6 +42,11 @@ public:
         this->calculateModelMatrix();
     }
 
+    void setAngleX(float angle) {
+        this->angle_x = angle;
+        this->calculateModelMatrix();
+    }
+
     void calculateModelMatrix() {
         M = glm::translate(glm::mat4(1.0f), position);
         M = glm::rotate(M, angle_y, glm::vec3(1.0f, 0.0f, 0.0f)); //Wylicz macierz modelu

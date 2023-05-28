@@ -21,6 +21,7 @@
 #include "terrain.h"
 #include "bounding_box.h"
 #include "engine.h"
+#include "npc.h";
 
 Engine* engine;
 
@@ -67,6 +68,12 @@ void initOpenGLProgram(GLFWwindow* window) {
 
 	auto skybox = new SkyboxObject();
 	engine->add(skybox, skyboxShader);
+
+	auto npc = new Npc(glm::vec3(0, -20.f, 0));
+	engine->add(npc, mainShader);
+
+	auto npc2 = new Npc(glm::vec3(50.f, -20.f, 100.f));
+	engine->add(npc2, mainShader);
 
 	auto terrain = new TerrainObject(
 		glm::vec3(-300.0f, -41.0f, -300.0f),
