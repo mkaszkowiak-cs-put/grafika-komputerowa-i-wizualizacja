@@ -114,10 +114,15 @@ void updateCameraPosition(double time_elapsed) {
 	cameraDirection = glm::normalize(cameraDirection);
 
 	glm::vec3 cameraLeft = glm::normalize(glm::cross(cameraUp, cameraDirection));
-	float delta_forward = getMovementDeltaForward(time_elapsed);
-	float delta_side = getMovementDeltaSide(time_elapsed);
+	float delta_forward = getMovementDeltaForward(time_elapsed) * 2;
+	float delta_side = getMovementDeltaSide(time_elapsed) * 2;
 
 	glm::vec3 delta_pos = cameraDirection * delta_forward + cameraLeft * delta_side;
+
+	if (delta_pos.x == 0 && delta_pos.y == 0 && delta_pos.z == 0) {
+		// if we didnt move there is no point in accelerating the camera nor checking collidity
+		return;
+	}
 
 	// odkomentuj aby nie latac
 	delta_pos.y = 0;

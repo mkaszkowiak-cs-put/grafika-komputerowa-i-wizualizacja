@@ -85,7 +85,7 @@ void initOpenGLProgram(GLFWwindow* window) {
 	for (const auto& wallCoords : roomWallsCoords) {
 		auto wall = new Wall(
 			wallCoords.start,
-			wallCoords.end,
+			wallCoords.size,
 			"bricks.png"
 		);
 		engine->add(wall, mainShader);
@@ -94,7 +94,7 @@ void initOpenGLProgram(GLFWwindow* window) {
 	for (const auto& wallCoords : horizontalWallsCoords) {
 		auto wall = new Wall(
 			wallCoords.start,
-			wallCoords.end,
+			wallCoords.size,
 			"bricks.png"
 		);
 		engine->add(wall, mainShader);
@@ -103,7 +103,7 @@ void initOpenGLProgram(GLFWwindow* window) {
 	for (const auto& wallCoords : verticalWallsCoords) {
 		auto wall = new Wall(
 			wallCoords.start,
-			wallCoords.end,
+			wallCoords.size,
 			"bricks.png"
 		);
 		engine->add(wall, mainShader);
@@ -112,7 +112,7 @@ void initOpenGLProgram(GLFWwindow* window) {
 	for (const auto& painting : paintings) {
 		auto wall = new Wall(
 			painting.start,
-			painting.end,
+			painting.size,
 			painting.texture
 		);
 		engine->add(wall, mainShader);

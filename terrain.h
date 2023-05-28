@@ -201,15 +201,15 @@ public:
 
 class Wall : public Object {
 public:
-    Wall(const glm::vec3 topFrontLeft, const glm::vec3 bottomBackRight, const CuboidWalls& textures) {
+    Wall(const glm::vec3 start, const glm::vec3 size, const CuboidWalls& textures) {
         drawable = new Cuboid(
-            topFrontLeft,
-            bottomBackRight,
+            start,
+            start + size,
             textures
         );
         boundingBox = new BoundingBox(
-            topFrontLeft,
-            bottomBackRight
+            start,
+            start + size
         );
     }
 

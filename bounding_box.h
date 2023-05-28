@@ -21,22 +21,20 @@ public:
 		this->maxCorner += delta;
 	}
 
-	bool intersects(glm::vec3 other) {
-		return other.x >= minCorner.x
-			&& other.x <= maxCorner.x
-			&& other.y >= minCorner.y
-			&& other.y <= maxCorner.y
-			&& other.z >= minCorner.z
-			&& other.z <= maxCorner.z;
+	bool intersects(const glm::vec3& other) {
+		bool collisionX = other.x >= minCorner.x && other.x <= maxCorner.x;
+		bool collisionY = other.y >= minCorner.y && other.y <= maxCorner.y;
+		bool collisionZ = other.z >= minCorner.z && other.z <= maxCorner.z;
+
+		return collisionX && collisionY && collisionZ;
 	}
 
 	bool intersects(BoundingBox other) {
-		return other.maxCorner.x >= minCorner.x
-			&& other.minCorner.x <= maxCorner.x
-			&& other.maxCorner.y >= minCorner.y
-			&& other.minCorner.y <= maxCorner.y
-			&& other.maxCorner.z >= minCorner.z
-			&& other.minCorner.z <= maxCorner.z;
+		bool collisionX = other.maxCorner.x >= minCorner.x && other.minCorner.x <= maxCorner.x;
+		bool collisionY = other.maxCorner.y >= minCorner.y && other.minCorner.y <= maxCorner.y;
+		bool collisionZ = other.maxCorner.z >= minCorner.z && other.minCorner.z <= maxCorner.z;
+
+		return collisionX && collisionY && collisionZ;
 	}
 
 	glm::vec3 position;
