@@ -131,6 +131,15 @@ void updateCameraPosition(double time_elapsed) {
 		return;
 	}
 
+	if (
+		(cameraPosition + delta_pos).x < -600.0f ||
+		(cameraPosition + delta_pos).x > 900.0f ||
+		(cameraPosition + delta_pos).z > 900.0f || 
+		(cameraPosition + delta_pos).z < -600.0f
+	) {
+		return;
+	}
+
 	cameraPosition += delta_pos;
 }
 

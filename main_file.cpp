@@ -81,8 +81,8 @@ void initOpenGLProgram(GLFWwindow* window) {
 	engine->add(npc2, mainShader);
 
 	auto terrain = new TerrainObject(
-		glm::vec3(-300.0f, -41.0f, -300.0f),
-		glm::vec3(600.0f, -41.0f, 600.0f),
+		glm::vec3(-700.0f, -41.0f, -700.0f),
+		glm::vec3(1000.0f, -41.0f, 1000.0f),
 		"dirt.png"
 	);
 	engine->add(terrain, mainShader);
