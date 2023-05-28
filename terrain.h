@@ -101,7 +101,7 @@ struct CuboidWalls {
 
 class Cuboid : public Drawable {
 public:
-    Cuboid(const glm::vec3 topFrontLeft, const glm::vec3 bottomBackRight, const CuboidWalls& textures) {
+    Cuboid(const glm::vec3 topFrontLeft, const glm::vec3 bottomBackRight, const CuboidWalls& textures, const DrawablePriority drawablePriority = DrawablePriority::NORMAL) : drawablePriority(drawablePriority){
         auto a = topFrontLeft.x;
         auto b = topFrontLeft.y;
         auto c = topFrontLeft.z;
@@ -171,6 +171,10 @@ public:
         }
     }
 
+    DrawablePriority getDrawablePriority() override {
+        return drawablePriority;
+    }
+
 protected:
     void initDrawable() {
         for (int i = 0; i < 6; i++) {
@@ -179,14 +183,16 @@ protected:
     }
 
     Rectangle* walls[6];
+    DrawablePriority drawablePriority;
 };
 class TerrainObject : public Object {
 public:
-    TerrainObject(const glm::vec3 topFrontLeft, const glm::vec3 bottomBackRight, const CuboidWalls& texture) {
+    TerrainObject(const glm::vec3 topFrontLeft, const glm::vec3 bottomBackRight, const CuboidWalls& texture, const DrawablePriority drawablePriority = DrawablePriority::NORMAL) {
         drawable = new Cuboid(
             topFrontLeft,
             bottomBackRight,
-            texture
+            texture,
+            drawablePriority
         );
     }
 

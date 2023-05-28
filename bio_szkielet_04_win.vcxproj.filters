@@ -88,5 +88,7 @@
     <None Include="f_skybox.glsl" />
     <None Include="v_skybox.glsl" />
     <None Include="LICENSE" />
+    <None Include="v_glass.glsl" />
+    <None Include="f_glass.glsl" />
   </ItemGroup>
 </Project>

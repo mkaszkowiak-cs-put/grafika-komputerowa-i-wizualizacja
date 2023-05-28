@@ -35,6 +35,7 @@ glm::vec3 lightPosition = glm::vec3(-5, -5, -5);
 
 ShaderProgram* mainShader;
 ShaderProgram* skyboxShader;
+ShaderProgram* glassShader;
 
 /*
 Model* model;
@@ -58,8 +59,12 @@ void initOpenGLProgram(GLFWwindow* window) {
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSetCursorPosCallback(window, mouse_callback);
 
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	mainShader = new ShaderProgram("vertex_shader.glsl",NULL,"fragment_shader.glsl");
 	skyboxShader= new ShaderProgram("v_skybox.glsl", NULL, "f_skybox.glsl");
+	glassShader = new ShaderProgram("v_glass.glsl", NULL, "f_glass.glsl");
 
 	engine = new Engine();
 
@@ -88,6 +93,15 @@ void initOpenGLProgram(GLFWwindow* window) {
 		"tiles.png"
 	);
 	engine->add(floor, mainShader);
+
+	auto ceiling = new TerrainObject(
+		glm::vec3(-150.0f, 60.0f, -150.0f),
+		glm::vec3(450.0f, 60.0f, 450.0f),
+		"glass.png",
+		// DrawablePriority::VERY_HIGH // Nie dziala
+		DrawablePriority::NORMAL // dziala (widac teksture, ale nie jest przezroczysta)
+	);
+	engine->add(ceiling, glassShader);
 
 	for (const auto& wallCoords : roomWallsCoords) {
 		auto wall = new Wall(

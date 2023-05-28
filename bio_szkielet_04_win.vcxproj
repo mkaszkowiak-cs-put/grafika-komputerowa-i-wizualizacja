@@ -44,9 +44,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="fragment_shader.glsl" />
+    <None Include="f_glass.glsl" />
     <None Include="f_skybox.glsl" />
     <None Include="LICENSE" />
     <None Include="vertex_shader.glsl" />
+    <None Include="v_glass.glsl" />
     <None Include="v_skybox.glsl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
