@@ -82,7 +82,7 @@ void main(void) {
     vec3 specular = vec3(0.2) * spec;
 
 
-    vec3 result = ambient + diffuse + specular;
+    vec3 result = ambient; // + diffuse + specular;
 
     for(int i = 0; i < NR_SPOT_LIGHTS; i++)
         result += CalcSpotLight(spotLights[i], normal, viewDir);    

@@ -188,11 +188,11 @@ void drawScene(GLFWwindow* window) {
 		glUniform3fv(mainShader->u(std::format("spotLights[{}].ambient", i).c_str()), 1, glm::value_ptr(glm::vec3(0.5f, 0.5f, 0.5f)));
 		glUniform3fv(mainShader->u(std::format("spotLights[{}].diffuse", i).c_str()), 1, glm::value_ptr(glm::vec3(0.8f, 0.8f, 0.8f)));
 		glUniform3fv(mainShader->u(std::format("spotLights[{}].specular", i).c_str()), 1, glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
-		glUniform1f(mainShader->u(std::format("spotLights[{}].cutOff", i).c_str()), glm::cos(glm::radians(15.5f)));
-		glUniform1f(mainShader->u(std::format("spotLights[{}].outerCutOff ", i).c_str()), glm::cos(glm::radians(20.5f)));
-		glUniform1f(mainShader->u(std::format("spotLights[{}].constant", i).c_str()), 10.0f); // the higher, the weaker the light
-		glUniform1f(mainShader->u(std::format("spotLights[{}].linear", i).c_str()), 0.00005f);
-		glUniform1f(mainShader->u(std::format("spotLights[{}].quadratic", i).c_str()), 0.00005f);
+		glUniform1f(mainShader->u(std::format("spotLights[{}].cutOff", i).c_str()), glm::cos(glm::radians(5.5f)));
+		glUniform1f(mainShader->u(std::format("spotLights[{}].outerCutOff ", i).c_str()), glm::cos(glm::radians(7.5f)));
+		glUniform1f(mainShader->u(std::format("spotLights[{}].constant", i).c_str()), 4.0f); // the higher, the weaker the light
+		glUniform1f(mainShader->u(std::format("spotLights[{}].linear", i).c_str()), 0.000001f);
+		glUniform1f(mainShader->u(std::format("spotLights[{}].quadratic", i).c_str()), 0.0000001f);
 	}
 
 	engine->draw();
