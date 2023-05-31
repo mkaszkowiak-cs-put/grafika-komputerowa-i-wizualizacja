@@ -18,12 +18,24 @@ public:
 		if (drawable) {
 			drawable->setPosition(newPosition);
 		}
+		if (boundingBoxDrawable) {
+			boundingBoxDrawable->setPosition(newPosition);
+		}
 	}
 
 	void rotateTo(float newAngle) {
 		angle_x = newAngle;
 
-		drawable->setAngleX(newAngle);
+		if (drawable) {
+			drawable->setAngleX(newAngle);
+		}
+
+		/*
+		* don't rotate boundingBoxDrawable, as the boundingBox doesn't rotate lol
+		if (boundingBoxDrawable) {
+			boundingBoxDrawable->setAngleX(newAngle);
+		}
+		*/
 	}
 
 	void move(glm::vec3 delta) {
@@ -40,15 +52,19 @@ public:
 	virtual void stepObject(Engine* engine, double timeDelta) = 0;
 
 	void draw() {
-		if (drawable) {
-			drawable->draw();
-		}
+		// this function is unused WELP
+		// refactoring Engine should be cool to accept Objects for rendering
+		// but rn this does nothing
 	}
 
 	void init(ShaderProgram* shader) {
 		if (drawable) {
-			this->drawable->init(shader);
+			drawable->init(shader);
 		}
+		if (boundingBoxDrawable) {
+			boundingBoxDrawable->init(shader);
+		}
+
 		this->initObject();
 	}
 
@@ -61,5 +77,6 @@ public:
 	float angle_x = 0;
 	BoundingBox* boundingBox;
 	Drawable* drawable;
+	Drawable* boundingBoxDrawable;
 };
 #endif

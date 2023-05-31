@@ -19,6 +19,7 @@
 #include <assimp/postprocess.h>
 
 #include <mesh.h>
+#include "object.h"
 
 #include <string>
 #include <fstream>
@@ -128,19 +129,23 @@ void updateCameraPosition(double time_elapsed) {
 	delta_pos.y = 0;
 
 	if (engine->collides(nullptr, cameraPosition + delta_pos)) {
+		printf("[Movement] Collision detected\n");
 		return;
 	}
 
 	if (
 		(cameraPosition + delta_pos).x < -600.0f ||
 		(cameraPosition + delta_pos).x > 900.0f ||
-		(cameraPosition + delta_pos).z > 900.0f || 
+		(cameraPosition + delta_pos).z > 900.0f ||
 		(cameraPosition + delta_pos).z < -600.0f
-	) {
+		) {
+		printf("[Movement] Out of bounds\n");
 		return;
 	}
 
 	cameraPosition += delta_pos;
+	printf("[Movement] X: %.2f Y: %.2f Z: %.2f\n", cameraPosition.x, cameraPosition.y, cameraPosition.z);
 }
+
 
 #endif

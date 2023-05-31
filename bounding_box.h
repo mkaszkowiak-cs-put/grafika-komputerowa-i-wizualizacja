@@ -29,10 +29,10 @@ public:
 		return collisionX && collisionY && collisionZ;
 	}
 
-	bool intersects(BoundingBox other) {
-		bool collisionX = other.maxCorner.x >= minCorner.x && other.minCorner.x <= maxCorner.x;
-		bool collisionY = other.maxCorner.y >= minCorner.y && other.minCorner.y <= maxCorner.y;
-		bool collisionZ = other.maxCorner.z >= minCorner.z && other.minCorner.z <= maxCorner.z;
+	bool intersects(BoundingBox* other) {
+		bool collisionX = other->maxCorner.x >= minCorner.x && other->minCorner.x <= maxCorner.x;
+		bool collisionY = other->maxCorner.y >= minCorner.y && other->minCorner.y <= maxCorner.y;
+		bool collisionZ = other->maxCorner.z >= minCorner.z && other->minCorner.z <= maxCorner.z;
 
 		return collisionX && collisionY && collisionZ;
 	}

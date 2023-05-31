@@ -9,11 +9,15 @@
 #include <GL/glu.h>
 #include "drawable.h"
 #include "object.h"
+#include "terrain.h"
 
 class Npc : public Object {
 public:
     Npc(glm::vec3 startPosition) : startPosition(startPosition) {
         drawable = new Model("models/skull.obj");
+        boundingBox = new BoundingBox({ 0, 0, 0 }, { 50, 50, 50 });
+        boundingBoxDrawable = new Cuboid(boundingBox->minCorner, boundingBox->maxCorner, "glass.png");
+
         state = State::Moving;
         timer = 0.0f;
         stopDuration = 5 + static_cast<float>(rand() % 5);
@@ -56,7 +60,10 @@ private:
     void stepMoving(Engine* engine, float delta) {
         glm::vec3 move = delta * 2 * direction;
 
-        if (engine->collides(this, position + move)) {
+        boundingBox->moveTo(position + move);
+
+        if (engine->collides(this, boundingBox)) {
+            boundingBox->moveTo(position);
             // Collision detected, change direction
             float randomAngle = static_cast<float>(rand() % 360);
             float radians = glm::radians(randomAngle);
@@ -70,6 +77,7 @@ private:
             this->rotateTo(rotationAngle);
         }
         else {
+            boundingBox->moveTo(position);
             // No collision, continue moving in the current direction
             this->move(move);
         }

@@ -171,6 +171,12 @@ public:
         }
     }
 
+    void afterSetPosition(glm::vec3 pos) {
+        for (int i = 0; i < 6; i++) {
+            walls[i]->setPosition(pos);
+        }
+    }
+
     DrawablePriority getDrawablePriority() override {
         return drawablePriority;
     }

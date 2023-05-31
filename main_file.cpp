@@ -37,11 +37,6 @@ ShaderProgram* mainShader;
 ShaderProgram* skyboxShader;
 ShaderProgram* glassShader;
 
-/*
-Model* model;
-Terrain* terrain;
-Skybox* skybox;
-*/
 
 //Procedura obsługi błędów
 void error_callback(int error, const char* description) {
@@ -68,16 +63,13 @@ void initOpenGLProgram(GLFWwindow* window) {
 
 	engine = new Engine();
 
-	//auto skull = new Skull();
-	//engine->add(skull, mainShader);
-
 	auto skybox = new SkyboxObject();
 	engine->add(skybox, skyboxShader);
 
 	auto npc = new Npc(glm::vec3(0, -20.f, 0));
 	engine->add(npc, mainShader);
 
-	auto npc2 = new Npc(glm::vec3(50.f, -20.f, 100.f));
+	auto npc2 = new Npc(glm::vec3(0.f, -20.f, 250.f));
 	engine->add(npc2, mainShader);
 
 	auto terrain = new TerrainObject(

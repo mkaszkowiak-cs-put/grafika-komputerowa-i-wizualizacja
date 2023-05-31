@@ -14,6 +14,11 @@ public:
 			this->addDrawable(drawable);
 		}
 
+		auto boundingBoxDrawable = object->boundingBoxDrawable;
+		if (boundingBoxDrawable) {
+			this->addDrawable(boundingBoxDrawable);
+		}
+
 		object->init(shader);
 		objects.push_back(object);
 	}
@@ -38,7 +43,7 @@ public:
 		return nullptr;
 	}
 	
-	Object* collides(Object* self, BoundingBox boundingBox) {
+	Object* collides(Object* self, BoundingBox* boundingBox) {
 		for (auto obj : objects) {
 			if (!obj->boundingBox) {
 				continue;
@@ -59,12 +64,10 @@ public:
 		}
 
 		for (auto obj : low_priority) {
-			//printf("drawing low priority\n");
 			obj->draw();
 		}
 
 		for (auto obj : normal_priority) {
-			//printf("drawing normal priority\n");
 			obj->draw();
 		}
 

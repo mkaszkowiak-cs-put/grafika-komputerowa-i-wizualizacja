@@ -21,6 +21,7 @@ class Drawable
 public:
     virtual ~Drawable() {}
     virtual void drawDrawable() = 0;
+    virtual void afterSetPosition(glm::vec3 pos) {}
     virtual DrawablePriority getDrawablePriority() {
         return DrawablePriority::NORMAL;
     }
@@ -40,6 +41,7 @@ public:
     void setPosition(glm::vec3 pos) {
         this->position = pos;
         this->calculateModelMatrix();
+        this->afterSetPosition(pos);
     }
 
     void setAngleX(float angle) {

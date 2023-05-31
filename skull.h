@@ -7,6 +7,8 @@
 #include "model.h"
 
 class Skull : public Object {
+	// Our Skull was used for early-stage testing
+	// We decided to honor it by making our NPCs skulls
 public:
 	Skull() {
 		drawable = new Model("models/Skull.obj");
