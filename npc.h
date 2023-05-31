@@ -14,9 +14,9 @@
 class Npc : public Object {
 public:
     Npc(glm::vec3 startPosition) : startPosition(startPosition) {
-        drawable = new Model("models/skull.obj");
+        drawable = new Model("models/FinalBaseMesh.obj");
         boundingBox = new BoundingBox({ 0, 0, 0 }, { 50, 50, 50 });
-        boundingBoxDrawable = new Cuboid(boundingBox->minCorner, boundingBox->maxCorner, "glass.png");
+        //boundingBoxDrawable = new Cuboid(boundingBox->minCorner, boundingBox->maxCorner, "glass.png");
 
         state = State::Moving;
         timer = 0.0f;
@@ -70,8 +70,8 @@ private:
             direction = glm::vec3(cos(radians) * speed, 0.0f, sin(radians) * speed);
 
             // Calculate rotation angle based on the direction vector
-            float rotationAngle = atan2(direction.z, direction.x);
-            rotationAngle = glm::degrees(rotationAngle);
+            float rotationAngle = atan2(direction.x, direction.z);
+            //rotationAngle = glm::degrees(rotationAngle);
 
             // Rotate the model in the direction it is moving
             this->rotateTo(rotationAngle);
