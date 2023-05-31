@@ -108,7 +108,7 @@ float getMovementDeltaSide(double time_elapsed) {
 	return delta_side;
 }
 
-void updateCameraPosition(double time_elapsed) {
+void updateCameraPosition(double time_elapsed, Object* cameraObject) {
 	cameraDirection.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
 	cameraDirection.y = sin(glm::radians(pitch));
 	cameraDirection.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
@@ -128,7 +128,7 @@ void updateCameraPosition(double time_elapsed) {
 	// odkomentuj aby nie latac
 	delta_pos.y = 0;
 
-	if (engine->collides(nullptr, cameraPosition + delta_pos)) {
+	if (engine->collides(cameraObject, cameraPosition + delta_pos)) {
 		printf("[Movement] Collision detected\n");
 		return;
 	}
@@ -144,6 +144,7 @@ void updateCameraPosition(double time_elapsed) {
 	}
 
 	cameraPosition += delta_pos;
+	cameraObject->moveTo(cameraPosition);
 	printf("[Movement] X: %.2f Y: %.2f Z: %.2f\n", cameraPosition.x, cameraPosition.y, cameraPosition.z);
 }
 

@@ -15,14 +15,17 @@ class Npc : public Object {
 public:
     Npc(glm::vec3 startPosition) : startPosition(startPosition) {
         drawable = new Model("models/FinalBaseMesh.obj");
-        boundingBox = new BoundingBox({ 0, 0, 0 }, { 50, 50, 50 });
-        //boundingBoxDrawable = new Cuboid(boundingBox->minCorner, boundingBox->maxCorner, "glass.png");
+        drawable->setScale(3);
+        boundingBox = new BoundingBox({ -15, 0, -15 }, { 15, 50, 15 });
+
+        // Uncomment to render the bounding box
+        // boundingBoxDrawable = new Cuboid(boundingBox->minCorner, boundingBox->maxCorner, "glass.png");
 
         state = State::Moving;
         timer = 0.0f;
         stopDuration = 5 + static_cast<float>(rand() % 5);
         walkDuration = 15 + static_cast<float>(rand() % 5);
-        speed = 50.0f;
+        speed = 20.0f;
         direction = glm::vec3(speed, 0.0f, 0.0f);  // Initial direction 
     }
 
@@ -71,7 +74,6 @@ private:
 
             // Calculate rotation angle based on the direction vector
             float rotationAngle = atan2(direction.x, direction.z);
-            //rotationAngle = glm::degrees(rotationAngle);
 
             // Rotate the model in the direction it is moving
             this->rotateTo(rotationAngle);

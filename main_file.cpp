@@ -38,6 +38,19 @@ ShaderProgram* skyboxShader;
 ShaderProgram* glassShader;
 
 
+class MockCameraObject : public Object {
+public:
+	MockCameraObject() {
+		boundingBox = new BoundingBox({ -5, -50, -5 }, { 5, 0, 5 });
+		position = cameraPosition; // global var... i'm sorry for this code... no time to refactor
+	}
+
+	void initObject() override {}
+	void stepObject(Engine* engine, double timeDelta) override {}
+};
+
+auto cameraObject = new MockCameraObject();
+
 //Procedura obsługi błędów
 void error_callback(int error, const char* description) {
 	fputs(description, stderr);
@@ -62,14 +75,15 @@ void initOpenGLProgram(GLFWwindow* window) {
 	glassShader = new ShaderProgram("v_glass.glsl", NULL, "f_glass.glsl");
 
 	engine = new Engine();
+	engine->add(cameraObject, mainShader);
 
 	auto skybox = new SkyboxObject();
 	engine->add(skybox, skyboxShader);
 
-	auto npc = new Npc(glm::vec3(0, -20.f, 0));
+	auto npc = new Npc(glm::vec3(100.0f, -40.f, 0));
 	engine->add(npc, mainShader);
 
-	auto npc2 = new Npc(glm::vec3(0.f, -20.f, 250.f));
+	auto npc2 = new Npc(glm::vec3(0.f, -40.f, 250.f));
 	engine->add(npc2, mainShader);
 
 	auto terrain = new TerrainObject(
@@ -228,7 +242,7 @@ int main(void)
 	while (!glfwWindowShouldClose(window)) //Tak długo jak okno nie powinno zostać zamknięte
 	{
 		double time_elapsed = glfwGetTime();
-		updateCameraPosition(time_elapsed);
+		updateCameraPosition(time_elapsed, cameraObject);
 		engine->step(time_elapsed);
 
 		/*printf("x:%.2f y:%.2f z:%.2f\n", cameraPosition.x, cameraPosition.y, cameraPosition.z);*/

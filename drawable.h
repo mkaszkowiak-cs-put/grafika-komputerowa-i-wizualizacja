@@ -54,10 +54,16 @@ public:
         this->calculateModelMatrix();
     }
 
+    void setScale(float scale) {
+        this->scale = scale;
+        this->calculateModelMatrix();
+    }
+
     void calculateModelMatrix() {
         M = glm::translate(glm::mat4(1.0f), position);
         M = glm::rotate(M, angle_y, glm::vec3(1.0f, 0.0f, 0.0f)); //Wylicz macierz modelu
         M = glm::rotate(M, angle_x, glm::vec3(0.0f, 1.0f, 0.0f)); //Wylicz macierz modelu
+        M = glm::scale(M, glm::vec3(scale, scale, scale));
     }
     
 
@@ -67,6 +73,7 @@ protected:
     glm::vec3 position = glm::vec3(0, 0, 0);
     float angle_y = 0;
     float angle_x = 0;
+    float scale = 1;
     glm::mat4 M;
 
 };
