@@ -98,8 +98,8 @@ void initOpenGLProgram(GLFWwindow* window) {
 		glm::vec3(-150.0f, 60.0f, -150.0f),
 		glm::vec3(450.0f, 60.0f, 450.0f),
 		"glass.png",
-		// DrawablePriority::VERY_HIGH // Nie dziala
-		DrawablePriority::NORMAL // dziala (widac teksture, ale nie jest przezroczysta)
+		DrawablePriority::VERY_HIGH // Nie dziala
+		//DrawablePriority::NORMAL // dziala (widac teksture, ale nie jest przezroczysta)
 	);
 	engine->add(ceiling, glassShader);
 
