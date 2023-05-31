@@ -31,7 +31,7 @@ Engine* engine;
 #include "skull.h"
 #include "room.h"
 
-glm::vec3 lightPosition = glm::vec3(-5, -5, -5);
+glm::vec3 lightPosition = glm::vec3(150, 1500, 150); // roughly in the middle in the sky
 
 ShaderProgram* mainShader;
 ShaderProgram* skyboxShader;
@@ -180,12 +180,6 @@ void drawScene(GLFWwindow* window) {
 	glUniform3fv(mainShader->u("lightPos"), 1, glm::value_ptr(lightPosition));
 	glUniform3fv(mainShader->u("viewPos"), 1, glm::value_ptr(cameraPosition));
 
-	// directional light
-	glUniform3fv(mainShader->u("dirLight.direction"), 1, glm::value_ptr(glm::vec3(-0.2f, -1.0f, -0.3f)));
-	glUniform3fv(mainShader->u("dirLight.ambient"), 1, glm::value_ptr(glm::vec3(0.05f, 0.05f, 0.05f)));
-	glUniform3fv(mainShader->u("dirLight.diffuse"), 1, glm::value_ptr(glm::vec3(0.4f, 0.4f, 0.4f)));
-	glUniform3fv(mainShader->u("dirLight.specular"), 1, glm::value_ptr(glm::vec3(0.5f, 0.5f, 0.5f)));
-
 	for (int i = 0; i < paintings.size(); i++) {
 		PaintingSpotLight spotLight = paintings.at(i).spotLight;
 
@@ -194,9 +188,9 @@ void drawScene(GLFWwindow* window) {
 		glUniform3fv(mainShader->u(std::format("spotLights[{}].ambient", i).c_str()), 1, glm::value_ptr(glm::vec3(0.5f, 0.5f, 0.5f)));
 		glUniform3fv(mainShader->u(std::format("spotLights[{}].diffuse", i).c_str()), 1, glm::value_ptr(glm::vec3(0.8f, 0.8f, 0.8f)));
 		glUniform3fv(mainShader->u(std::format("spotLights[{}].specular", i).c_str()), 1, glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
-		glUniform1f(mainShader->u(std::format("spotLights[{}].cutOff", i).c_str()), glm::cos(glm::radians(12.5f)));
-		glUniform1f(mainShader->u(std::format("spotLights[{}].outerCutOff ", i).c_str()), glm::cos(glm::radians(17.5f)));
-		glUniform1f(mainShader->u(std::format("spotLights[{}].constant", i).c_str()), 1.0f);
+		glUniform1f(mainShader->u(std::format("spotLights[{}].cutOff", i).c_str()), glm::cos(glm::radians(15.5f)));
+		glUniform1f(mainShader->u(std::format("spotLights[{}].outerCutOff ", i).c_str()), glm::cos(glm::radians(20.5f)));
+		glUniform1f(mainShader->u(std::format("spotLights[{}].constant", i).c_str()), 10.0f); // the higher, the weaker the light
 		glUniform1f(mainShader->u(std::format("spotLights[{}].linear", i).c_str()), 0.00005f);
 		glUniform1f(mainShader->u(std::format("spotLights[{}].quadratic", i).c_str()), 0.00005f);
 	}

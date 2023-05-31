@@ -30,26 +30,6 @@ struct SpotLight {
 uniform SpotLight spotLights[NR_SPOT_LIGHTS];
 uniform SpotLight light;
 
-vec3 CalcDirLight(vec3 normal, vec3 viewDir) {
-    vec3 color = texture(tex, i_tc).rgb;
-
-    vec3 ambient = 0.3 * color;
-    vec3 diffuse = color;
-    vec3 specular = vec3(0.3); // assuming bright white light color
-
-    vec3 lightDir = normalize(lightPos - FragPos);
-
-    float diff = max(dot(lightDir, normal), 0.0);
-
-    float spec = 0.0;
-    vec3 halfwayDir = normalize(lightDir + viewDir);  
-    spec = pow(max(dot(normal, halfwayDir), 0.0), 32.0);
-
-    diffuse  = diffuse  * diff;
-    specular = specular * spec;
-
-    return (ambient + diffuse + specular);
-}
 
 vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 viewDir)
 {
@@ -88,10 +68,25 @@ void main(void) {
     vec3 normal = normalize(Normal);
     vec3 viewDir = normalize(viewPos - FragPos);
 
-    vec3 result = CalcDirLight(normal, viewDir);
+    vec3 color = texture(tex, i_tc).rgb;
+    vec3 ambient = 0.0 * color;
+
+    vec3 lightDir = normalize(lightPos - FragPos);
+    float diff = max(dot(lightDir, normal), 0.0);
+    vec3 diffuse = diff * color * 0.5;
+
+    // specular
+    float spec = 0.0;
+    vec3 halfwayDir = normalize(lightDir + viewDir);  
+    spec = pow(max(dot(normal, halfwayDir), 0.0), 32.0);
+    vec3 specular = vec3(0.2) * spec;
+
+
+    vec3 result = ambient + diffuse + specular;
 
     for(int i = 0; i < NR_SPOT_LIGHTS; i++)
         result += CalcSpotLight(spotLights[i], normal, viewDir);    
     
+
     pixelColor = vec4(result, 1.0);
 }

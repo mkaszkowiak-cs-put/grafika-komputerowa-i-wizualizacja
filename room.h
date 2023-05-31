@@ -28,9 +28,9 @@ struct Painting : WallCoordinates {
 		lightPosition.z = start.z + (size.z / 2);
 
 		glm::vec3 lightDirection = glm::vec3(
-			onZAxis ? 0.0f : lightPosition.x,
+			onZAxis ? 0.0f : -lightPosition.x,
 			-40.0f,
-			!onZAxis ? 0.0f : lightPosition.z
+			!onZAxis ? 0.0f : -lightPosition.z
 		);
 
 		spotLight = PaintingSpotLight(
@@ -104,6 +104,7 @@ std::vector<Painting> paintings {
 		"paintings/burning-skull.png",
 		true
 	),
+	
 	Painting(
 		glm::vec3(-149.0f, -20.0f, 270.0f),
 		glm::vec3(2.0f, 60.0f, 60.0f),
@@ -117,12 +118,14 @@ std::vector<Painting> paintings {
 		"paintings/match.png",
 		true
 	),
-	//Painting(
-	//	glm::vec3(447.0f, -20.0f, 270.0f),
-	//	glm::vec3(2.0f, 60.0f, 60.0f),
-	//	"paintings/skull-and-roses.png",
-	//	false
-	//),
+/*
+	Painting(
+		glm::vec3(447.0f, -20.0f, 270.0f),
+		glm::vec3(2.0f, 60.0f, 60.0f),
+		"paintings/skull-and-roses.png",
+		false
+	), // blocks the door
+	*/ 
 	// ROOM 3
 	Painting(
 		glm::vec3(-37.5f, -20.0f, -149.0f),

@@ -22,6 +22,8 @@ void main(void) {
     gl_Position=P*V*M*vertex;
 
     i_tc = texCoord;
-    Normal = normal.xyz;
+
+    // expensive computation wise, but required bcuz we're rotating and scaling our model
+    Normal = mat3(transpose(inverse(M))) * normal.xyz;  
     FragPos = vertex.xyz;
 }
