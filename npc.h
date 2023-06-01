@@ -14,9 +14,9 @@
 class Npc : public Object {
 public:
     Npc(glm::vec3 startPosition) : startPosition(startPosition) {
-        drawable = new Model("models/FinalBaseMesh.obj");
+        drawable = new Model("models/Walle.obj");
         drawable->setScale(3);
-        boundingBox = new BoundingBox({ -15, 0, -15 }, { 15, 50, 15 });
+        boundingBox = new BoundingBox({ -20, 0, -20 }, { 20, 50, 20 });
 
         // Uncomment to render the bounding box
         // boundingBoxDrawable = new Cuboid(boundingBox->minCorner, boundingBox->maxCorner, "glass.png");

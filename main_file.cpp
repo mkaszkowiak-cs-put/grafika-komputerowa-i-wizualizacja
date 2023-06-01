@@ -80,10 +80,10 @@ void initOpenGLProgram(GLFWwindow* window) {
 	auto skybox = new SkyboxObject();
 	engine->add(skybox, skyboxShader);
 
-	auto npc = new Npc(glm::vec3(100.0f, -40.f, 0));
+	auto npc = new Npc(glm::vec3(100.0f, -20.f, 0));
 	engine->add(npc, mainShader);
 
-	auto npc2 = new Npc(glm::vec3(0.f, -40.f, 250.f));
+	auto npc2 = new Npc(glm::vec3(0.f, -20.f, 250.f));
 	engine->add(npc2, mainShader);
 
 	auto terrain = new TerrainObject(
