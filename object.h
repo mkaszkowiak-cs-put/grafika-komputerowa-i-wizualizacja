@@ -30,12 +30,7 @@ public:
 			drawable->setAngleX(newAngle);
 		}
 
-		/*
-		* don't rotate boundingBoxDrawable, as the boundingBox doesn't rotate lol
-		if (boundingBoxDrawable) {
-			boundingBoxDrawable->setAngleX(newAngle);
-		}
-		*/
+		// we don't rotate boundingBoxDrawable, as the boundingBox doesn't rotate
 	}
 
 	void move(glm::vec3 delta) {
@@ -51,11 +46,8 @@ public:
 	virtual void initObject() = 0;
 	virtual void stepObject(Engine* engine, double timeDelta) = 0;
 
-	void draw() {
-		// this function is unused WELP
-		// refactoring Engine should be cool to accept Objects for rendering
-		// but rn this does nothing
-	}
+	// Object could use a draw() function, but rn Drawables are passed into Engine
+	// also Object could handle multiple Drawables, which would be pretty cool
 
 	void init(ShaderProgram* shader) {
 		if (drawable) {
