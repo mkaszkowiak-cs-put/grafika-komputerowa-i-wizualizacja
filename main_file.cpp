@@ -72,6 +72,10 @@ void initOpenGLProgram(GLFWwindow* window) {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+	// antialiasing, turn off if laggy
+	glfwWindowHint(GLFW_SAMPLES, 4);
+	glEnable(GL_MULTISAMPLE);
+
 	mainShader = new ShaderProgram("vertex_shader.glsl",NULL,"fragment_shader.glsl");
 	skyboxShader= new ShaderProgram("v_skybox.glsl", NULL, "f_skybox.glsl");
 	glassShader = new ShaderProgram("v_glass.glsl", NULL, "f_glass.glsl");
@@ -91,31 +95,29 @@ void initOpenGLProgram(GLFWwindow* window) {
 	auto terrain = new TerrainObject(
 		glm::vec3(-700.0f, -41.0f, -700.0f),
 		glm::vec3(1000.0f, -41.0f, 1000.0f),
-		"dirt.png"
+		"rock.jpg"
 	);
 	engine->add(terrain, mainShader);
 
 	auto floor = new TerrainObject(
 		glm::vec3(-155.0f, -40.0f, -155.0f),
 		glm::vec3(455.0f, -40.0f, 455.0f),
-		"tiles.png"
+		"tiles.jpg"
 	);
 	engine->add(floor, mainShader);
 
 	auto ceiling = new TerrainObject(
 		glm::vec3(-155.0f, 60.0f, -155.0f),
 		glm::vec3(455.0f, 60.0f, 455.0f),
-		"glass.png",
-		// DrawablePriority::VERY_HIGH // Nie dziala
-		DrawablePriority::NORMAL // dziala (widac teksture, ale nie jest przezroczysta)
+		"rock.jpg"
 	);
-	engine->add(ceiling, glassShader);
+	engine->add(ceiling, mainShader);
 
 	for (const auto& wallCoords : roomWallsCoords) {
 		auto wall = new Wall(
 			wallCoords.start,
 			wallCoords.size,
-			"bricks.png"
+			"stone.jpg"
 		);
 		engine->add(wall, mainShader);
 	}
@@ -124,7 +126,7 @@ void initOpenGLProgram(GLFWwindow* window) {
 		auto wall = new Wall(
 			wallCoords.start,
 			wallCoords.size,
-			"bricks.png"
+			"stone.jpg"
 		);
 		engine->add(wall, mainShader);
 	}
@@ -133,7 +135,7 @@ void initOpenGLProgram(GLFWwindow* window) {
 		auto wall = new Wall(
 			wallCoords.start,
 			wallCoords.size,
-			"bricks.png"
+			"stone.jpg"
 		);
 		engine->add(wall, mainShader);
 	}

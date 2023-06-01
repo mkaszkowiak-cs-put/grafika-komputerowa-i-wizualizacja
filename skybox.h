@@ -37,12 +37,12 @@ public:
 protected:
 	void initDrawable() {
 		create_cube_map(
-			"textures/skybox/negz.jpg", // back - negz
-			"textures/skybox/posz.jpg", // front - posz
-			"textures/skybox/posy.jpg", // top - posy
-			"textures/skybox/negy.jpg", // bottom - negy
-			"textures/skybox/negx.jpg", // left - negx
-			"textures/skybox/posx.jpg", // right - posx
+			"textures/skybox/interstellar_lf.jpg", // back - negz
+			"textures/skybox/interstellar_rt.jpg", // front - posz
+			"textures/skybox/interstellar_up.jpg", // top - posy
+			"textures/skybox/interstellar_dn.jpg", // bottom - negy
+			"textures/skybox/interstellar_bk.jpg", // left - negx
+			"textures/skybox/interstellar_ft.jpg", // right - posx
 			&texCube
 		);
 
