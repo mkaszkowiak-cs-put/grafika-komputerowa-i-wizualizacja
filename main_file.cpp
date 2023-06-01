@@ -95,21 +95,24 @@ void initOpenGLProgram(GLFWwindow* window) {
 	auto terrain = new TerrainObject(
 		glm::vec3(-700.0f, -41.0f, -700.0f),
 		glm::vec3(1000.0f, -41.0f, 1000.0f),
-		"rock.jpg"
+		"rock.jpg",
+		20.0f
 	);
 	engine->add(terrain, mainShader);
 
 	auto floor = new TerrainObject(
 		glm::vec3(-155.0f, -40.0f, -155.0f),
 		glm::vec3(455.0f, -40.0f, 455.0f),
-		"tiles.jpg"
+		"tiles.jpg",
+		2.0f
 	);
 	engine->add(floor, mainShader);
 
 	auto ceiling = new TerrainObject(
 		glm::vec3(-155.0f, 60.0f, -155.0f),
 		glm::vec3(455.0f, 60.0f, 455.0f),
-		"rock.jpg"
+		"rock.jpg",
+		5.0f
 	);
 	engine->add(ceiling, mainShader);
 

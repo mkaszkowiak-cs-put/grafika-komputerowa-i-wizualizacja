@@ -26,13 +26,14 @@ private:
     const char* texturePath;
 
 public:
-    Rectangle(glm::vec3 topRight, glm::vec3 bottomRight, glm::vec3 bottomLeft, glm::vec3 topLeft, const char* texturePath) {
+    Rectangle(glm::vec3 topRight, glm::vec3 bottomRight, glm::vec3 bottomLeft, glm::vec3 topLeft, const char* texturePath, float repeatTexture = 1.0f) {
         this->topRight = topRight;
         this->topLeft = topLeft;
         this->bottomRight = bottomRight;
         this->bottomLeft = bottomLeft;
         
         this->texturePath = texturePath;
+        this->repeatTexture = repeatTexture;
     }
 
 
@@ -43,15 +44,17 @@ public:
     }
 
 protected:
+    float repeatTexture;
+
     void initDrawable() {
         textureID = TextureFromFile(this->texturePath, "textures");
 
         float vertices[]  = {
             // 4 floats: position, 4 floats: normal vector, 2 floats: tex coords
-            topRight.x, topRight.y, topRight.z,  1.0f,   0.0f, 1.0f, 0.0f, 0.0f,  1.0f, 1.0f,
-            bottomRight.x, bottomRight.y, bottomRight.z, 1.0f,   0.0f, 1.0f, 0.0f, 0.0f,  1.0f, 0.0f,
-            bottomLeft.x, bottomLeft.y, bottomLeft.z, 1.0f,   0.0f, 1.0f, 0.0f, 0.0f,  0.0f, 0.0f,
-            topLeft.x, topLeft.y, topLeft.z, 1.0f,  0.0f, 1.0f, 0.0f, 0.0f,  0.0f, 1.0f
+            topRight.x, topRight.y, topRight.z,  1.0f,   0.0f, 1.0f, 0.0f, 0.0f,            repeatTexture, repeatTexture,
+            bottomRight.x, bottomRight.y, bottomRight.z, 1.0f,   0.0f, 1.0f, 0.0f, 0.0f,    repeatTexture, 0.0f,
+            bottomLeft.x, bottomLeft.y, bottomLeft.z, 1.0f,   0.0f, 1.0f, 0.0f, 0.0f,       0.0f, 0.0f,
+            topLeft.x, topLeft.y, topLeft.z, 1.0f,  0.0f, 1.0f, 0.0f, 0.0f,                 0.0f, repeatTexture
         };
 
         glGenVertexArrays(1, &VAO);
@@ -101,7 +104,7 @@ struct CuboidWalls {
 
 class Cuboid : public Drawable {
 public:
-    Cuboid(const glm::vec3 topFrontLeft, const glm::vec3 bottomBackRight, const CuboidWalls& textures, const DrawablePriority drawablePriority = DrawablePriority::NORMAL) : drawablePriority(drawablePriority){
+    Cuboid(const glm::vec3 topFrontLeft, const glm::vec3 bottomBackRight, const CuboidWalls& textures, float repeatTexture = 1.0f) {
         auto a = topFrontLeft.x;
         auto b = topFrontLeft.y;
         auto c = topFrontLeft.z;
@@ -109,13 +112,16 @@ public:
         auto e = bottomBackRight.y;
         auto f = bottomBackRight.z;
 
+        drawablePriority = DrawablePriority::NORMAL;
+
         // pod³oga:
         walls[0] = new Rectangle(
             glm::vec3(d, b, f),
             glm::vec3(a, b, f),
             glm::vec3(a, b, c),
             glm::vec3(d, b, c),
-            textures.floor
+            textures.floor,
+            repeatTexture
         );
 
         // sufit:
@@ -124,7 +130,8 @@ public:
             glm::vec3(a, e, f),
             glm::vec3(a, e, c),
             glm::vec3(d, e, c),
-            textures.ceiling
+            textures.ceiling,
+            repeatTexture
         );
 
 
@@ -134,7 +141,8 @@ public:
             glm::vec3(a, b, f),
             glm::vec3(a, b, c),
             glm::vec3(a, e, c),
-            textures.front
+            textures.front,
+            repeatTexture
         );
 
         // tyl:
@@ -143,7 +151,8 @@ public:
             glm::vec3(d, b, f),
             glm::vec3(d, b, c),
             glm::vec3(d, e, c),
-            textures.back
+            textures.back,
+            repeatTexture
         );
 
         // lewo:
@@ -152,7 +161,8 @@ public:
             glm::vec3(d, b, c),
             glm::vec3(a, b, c),
             glm::vec3(a, e, c),
-            textures.left
+            textures.left,
+            repeatTexture
         );
 
         // prawo:
@@ -161,7 +171,8 @@ public:
             glm::vec3(d, b, f),
             glm::vec3(a, b, f),
             glm::vec3(a, e, f),
-            textures.right
+            textures.right,
+            repeatTexture
         );
 
     }
@@ -193,12 +204,12 @@ protected:
 };
 class TerrainObject : public Object {
 public:
-    TerrainObject(const glm::vec3 topFrontLeft, const glm::vec3 bottomBackRight, const CuboidWalls& texture, const DrawablePriority drawablePriority = DrawablePriority::NORMAL) {
+    TerrainObject(const glm::vec3 topFrontLeft, const glm::vec3 bottomBackRight, const CuboidWalls& texture, float repeatTexture = 1.0f) {
         drawable = new Cuboid(
             topFrontLeft,
             bottomBackRight,
             texture,
-            drawablePriority
+            repeatTexture
         );
     }
 
