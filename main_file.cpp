@@ -20,11 +20,13 @@
 #include "drawable.h"
 #include "terrain.h"
 #include "bounding_box.h"
-#include "engine.h"
-#include "npc.h";
 
+bool showBoundBoxes = false;
+
+#include "engine.h"
 Engine* engine;
 
+#include "npc.h";
 #include "input.h"
 #include "skybox.h"
 

@@ -16,7 +16,7 @@ public:
 
 		auto boundingBoxDrawable = object->boundingBoxDrawable;
 		if (boundingBoxDrawable) {
-			this->addDrawable(boundingBoxDrawable);
+			bounding_box_drawables.push_back(boundingBoxDrawable);
 		}
 
 		object->init(shader);
@@ -71,6 +71,12 @@ public:
 			obj->draw();
 		}
 
+		if (showBoundBoxes) {
+			for (auto obj : bounding_box_drawables) {
+				obj->draw();
+			}
+		}
+
 		for (auto obj : high_priority) {
 			obj->draw();
 		}
@@ -86,6 +92,8 @@ protected:
 	std::vector<Drawable*> normal_priority;
 	std::vector<Drawable*> high_priority;
 	std::vector<Drawable*> very_high_priority;
+
+	std::vector<Drawable*> bounding_box_drawables;
 
 	std::vector<Object*> objects;
 

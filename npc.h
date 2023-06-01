@@ -19,7 +19,7 @@ public:
         boundingBox = new BoundingBox({ -20, 0, -20 }, { 20, 50, 20 });
 
         // Uncomment to render the bounding box
-        // boundingBoxDrawable = new Cuboid(boundingBox->minCorner, boundingBox->maxCorner, "glass.png");
+        boundingBoxDrawable = new Cuboid(boundingBox->minCorner, boundingBox->maxCorner, "glass.png");
 
         state = State::Moving;
         timer = 0.0f;

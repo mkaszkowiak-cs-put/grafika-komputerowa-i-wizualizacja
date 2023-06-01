@@ -52,6 +52,7 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 		if (key == GLFW_KEY_S) s_pressed = true;
 		if (key == GLFW_KEY_A) a_pressed = true;
 		if (key == GLFW_KEY_D) d_pressed = true;
+		if (key == GLFW_KEY_B) showBoundBoxes = !showBoundBoxes;
 	}
 	if (action == GLFW_RELEASE) {
 		if (key == GLFW_KEY_W) w_pressed = false;
