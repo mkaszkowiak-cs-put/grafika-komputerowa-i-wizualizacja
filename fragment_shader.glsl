@@ -81,11 +81,10 @@ void main(void) {
     spec = pow(max(dot(normal, halfwayDir), 0.0), 32.0);
     vec3 specular = vec3(0.2) * spec;
 
-
-    vec3 result = ambient; // + diffuse + specular;
+    vec3 result = ambient + diffuse + specular;
 
     for(int i = 0; i < NR_SPOT_LIGHTS; i++)
-        result += CalcSpotLight(spotLights[i], normal, viewDir);    
+        result += CalcSpotLight(spotLights[i], normal, normalize(FragPos));    
     
 
     pixelColor = vec4(result, 1.0);

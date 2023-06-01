@@ -21,7 +21,7 @@ struct PaintingSpotLight {
 
 struct Painting : WallCoordinates {
 	Painting(glm::vec3 start, glm::vec3 size, const char* texture, bool onZAxis) : WallCoordinates(start, size), texture(texture), spotLight(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0)) {
-		glm::vec3 lightPosition = glm::vec3(150, -20, 150);
+		glm::vec3 lightPosition = glm::vec3(150, 55, 150);
 
 		auto centerX = start.x + (size.x / 2);
 		auto topY = (start.y + size.y) + 5.0f;
@@ -29,9 +29,9 @@ struct Painting : WallCoordinates {
 
 		auto pointTo = glm::vec3(start.x, start.y, start.z);
 
-		printf("[Light] Painting at X: %.2f Y: %.2f Z: %.2f \n", start.x, start.y, start.z);
-
 		glm::vec3 lightDirection = glm::normalize(pointTo - lightPosition);
+
+		printf("[Light] Painting at X: %.2f Y: %.2f Z: %.2f \n", start.x, start.y, start.z);
 
 		spotLight = PaintingSpotLight(
 			lightPosition,

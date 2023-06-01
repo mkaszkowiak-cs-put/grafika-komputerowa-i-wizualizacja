@@ -94,18 +94,18 @@ void initOpenGLProgram(GLFWwindow* window) {
 	engine->add(terrain, mainShader);
 
 	auto floor = new TerrainObject(
-		glm::vec3(-150.0f, -40.0f, -150.0f),
-		glm::vec3(450.0f, -40.0f, 450.0f),
+		glm::vec3(-155.0f, -40.0f, -155.0f),
+		glm::vec3(455.0f, -40.0f, 455.0f),
 		"tiles.png"
 	);
 	engine->add(floor, mainShader);
 
 	auto ceiling = new TerrainObject(
-		glm::vec3(-150.0f, 60.0f, -150.0f),
-		glm::vec3(450.0f, 60.0f, 450.0f),
+		glm::vec3(-155.0f, 60.0f, -155.0f),
+		glm::vec3(455.0f, 60.0f, 455.0f),
 		"glass.png",
-		DrawablePriority::VERY_HIGH // Nie dziala
-		//DrawablePriority::NORMAL // dziala (widac teksture, ale nie jest przezroczysta)
+		// DrawablePriority::VERY_HIGH // Nie dziala
+		DrawablePriority::NORMAL // dziala (widac teksture, ale nie jest przezroczysta)
 	);
 	engine->add(ceiling, glassShader);
 
@@ -185,13 +185,13 @@ void drawScene(GLFWwindow* window) {
 
 		glUniform3fv(mainShader->u(std::format("spotLights[{}].position", i).c_str()), 1, glm::value_ptr(spotLight.position));
 		glUniform3fv(mainShader->u(std::format("spotLights[{}].direction", i).c_str()), 1, glm::value_ptr(spotLight.direction));
-		glUniform3fv(mainShader->u(std::format("spotLights[{}].ambient", i).c_str()), 1, glm::value_ptr(glm::vec3(0.5f, 0.5f, 0.5f)));
+		glUniform3fv(mainShader->u(std::format("spotLights[{}].ambient", i).c_str()), 1, glm::value_ptr(glm::vec3(0.05f, 0.05f, 0.05f)));
 		glUniform3fv(mainShader->u(std::format("spotLights[{}].diffuse", i).c_str()), 1, glm::value_ptr(glm::vec3(0.8f, 0.8f, 0.8f)));
-		glUniform3fv(mainShader->u(std::format("spotLights[{}].specular", i).c_str()), 1, glm::value_ptr(glm::vec3(1.0f, 1.0f, 1.0f)));
-		glUniform1f(mainShader->u(std::format("spotLights[{}].cutOff", i).c_str()), glm::cos(glm::radians(5.5f)));
-		glUniform1f(mainShader->u(std::format("spotLights[{}].outerCutOff ", i).c_str()), glm::cos(glm::radians(7.5f)));
-		glUniform1f(mainShader->u(std::format("spotLights[{}].constant", i).c_str()), 4.0f); // the higher, the weaker the light
-		glUniform1f(mainShader->u(std::format("spotLights[{}].linear", i).c_str()), 0.000001f);
+		glUniform3fv(mainShader->u(std::format("spotLights[{}].specular", i).c_str()), 1, glm::value_ptr(glm::vec3(0.3f, 0.3f, 0.3f)));
+		glUniform1f(mainShader->u(std::format("spotLights[{}].cutOff", i).c_str()), glm::cos(glm::radians(1.5f)));
+		glUniform1f(mainShader->u(std::format("spotLights[{}].outerCutOff ", i).c_str()), glm::cos(glm::radians(6.5f)));
+		glUniform1f(mainShader->u(std::format("spotLights[{}].constant", i).c_str()), 6.0f); // the higher, the weaker the light
+		glUniform1f(mainShader->u(std::format("spotLights[{}].linear", i).c_str()), 0.001f);
 		glUniform1f(mainShader->u(std::format("spotLights[{}].quadratic", i).c_str()), 0.0000001f);
 	}
 
